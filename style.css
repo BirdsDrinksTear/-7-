@@ -1,0 +1,164 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Jua&display=swap');
+
+:root {
+  --upstream:   #4a9e6b;   /* 상류 - 초록 */
+  --midstream:  #2e86c1;   /* 중류 - 파랑 */
+  --downstream: #1a5276;   /* 하류 - 진파랑 */
+  --river:      #5dade2;
+  --river-dark: #2471a3;
+  --surface:    #eaf6fb;
+  --sand:       #f5e6c8;
+  --grass:      #a8d5a2;
+  --accent:     #f39c12;
+  --danger:     #e74c3c;
+  --dark:       #1c2833;
+  --white:      #ffffff;
+  --nav-h:      60px;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--surface);
+  color: var(--dark);
+  line-height: 1.6;
+}
+
+/* ── NAV ── */
+.site-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 900;
+  height: var(--nav-h);
+  background: rgba(28, 40, 51, 0.96);
+  backdrop-filter: blur(10px);
+  display: flex; align-items: center;
+  padding: 0 28px;
+  gap: 8px;
+}
+.nav-brand {
+  font-family: 'Jua', sans-serif;
+  font-size: 1.2rem;
+  color: var(--river);
+  text-decoration: none;
+  margin-right: auto;
+  white-space: nowrap;
+}
+.nav-brand span { color: var(--accent); }
+.nav-links { display: flex; gap: 4px; list-style: none; flex-wrap: wrap; }
+.nav-links a {
+  color: rgba(255,255,255,0.75);
+  text-decoration: none;
+  font-size: 0.88rem;
+  padding: 6px 14px;
+  border-radius: 20px;
+  transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+.nav-links a:hover,
+.nav-links a.active { background: var(--river-dark); color: #fff; }
+
+/* Hamburger (mobile) */
+.nav-toggle {
+  display: none;
+  background: none; border: none; cursor: pointer;
+  padding: 4px;
+  flex-direction: column; gap: 5px;
+}
+.nav-toggle span {
+  display: block; width: 24px; height: 2px;
+  background: #fff; border-radius: 2px; transition: 0.3s;
+}
+
+/* ── PAGE TITLE HERO ── */
+.page-hero {
+  padding: calc(var(--nav-h) + 48px) 24px 48px;
+  text-align: center;
+}
+.page-hero h1 {
+  font-family: 'Jua', sans-serif;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  margin-bottom: 10px;
+}
+.page-hero p { color: #555; font-size: 1rem; max-width: 560px; margin: 0 auto; }
+
+/* ── SECTION ── */
+.section { padding: 60px 24px; max-width: 1100px; margin: 0 auto; }
+.section-title {
+  font-family: 'Jua', sans-serif;
+  font-size: 1.6rem;
+  margin-bottom: 28px;
+  display: flex; align-items: center; gap: 10px;
+}
+.section-title::after {
+  content: '';
+  flex: 1; height: 2px;
+  background: linear-gradient(to right, var(--river), transparent);
+}
+
+/* ── CARD ── */
+.card {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+  overflow: hidden;
+}
+
+/* ── BUTTON ── */
+.btn {
+  display: inline-block;
+  padding: 11px 26px;
+  border-radius: 30px;
+  border: none;
+  font-family: 'Jua', sans-serif;
+  font-size: 0.95rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+.btn-primary { background: var(--river-dark); color: #fff; }
+.btn-accent  { background: var(--accent); color: #fff; }
+.btn-ghost   { background: #f0f4f8; color: var(--dark); }
+.btn-danger  { background: var(--danger); color: #fff; }
+
+/* ── BADGE ── */
+.badge {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 12px;
+  font-size: 0.78rem; font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.badge-green  { background: #d4efdf; color: #1a5c2a; }
+.badge-blue   { background: #d6eaf8; color: #154360; }
+.badge-orange { background: #fdebd0; color: #784212; }
+.badge-red    { background: #fadbd8; color: #922b21; }
+
+/* ── FOOTER ── */
+.site-footer {
+  background: var(--dark);
+  color: rgba(255,255,255,0.5);
+  text-align: center;
+  padding: 32px 20px;
+  font-size: 0.85rem;
+  line-height: 1.8;
+}
+.site-footer a { color: var(--river); text-decoration: none; }
+
+/* ── MOBILE ── */
+@media (max-width: 768px) {
+  .nav-toggle { display: flex; }
+  .nav-links {
+    display: none;
+    position: absolute; top: var(--nav-h); left: 0; right: 0;
+    background: rgba(28,40,51,0.98);
+    flex-direction: column;
+    padding: 12px 16px 20px;
+    gap: 4px;
+  }
+  .nav-links.open { display: flex; }
+  .nav-links a { font-size: 1rem; padding: 10px 16px; }
+  .section { padding: 40px 16px; }
+}

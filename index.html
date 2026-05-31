@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>한강 생태 탐험대</title>
+<link rel="stylesheet" href="style.css">
+<style>
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  background: linear-gradient(160deg, #0d3b5e 0%, #1a6ea8 45%, #2ecc71 100%);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+  position: relative; overflow: hidden;
+  padding: calc(var(--nav-h) + 40px) 24px 60px;
+}
+.hero-bg-wave {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 140px; pointer-events: none;
+}
+.hero-title {
+  font-family: 'Jua', sans-serif;
+  font-size: clamp(2.4rem, 7vw, 5.5rem);
+  color: #fff;
+  text-shadow: 0 4px 30px rgba(0,0,0,0.35);
+  animation: fadeUp 0.9s ease both;
+}
+.hero-sub {
+  font-size: clamp(1rem, 2.5vw, 1.3rem);
+  color: rgba(255,255,255,0.88);
+  margin: 18px 0 36px;
+  animation: fadeUp 0.9s 0.15s ease both;
+}
+.hero-btns {
+  display: flex; gap: 14px; flex-wrap: wrap; justify-content: center;
+  animation: fadeUp 0.9s 0.3s ease both;
+}
+.hero-scroll-hint {
+  position: absolute; bottom: 160px; left: 50%; transform: translateX(-50%);
+  color: rgba(255,255,255,0.6); font-size: 0.85rem;
+  animation: bounce 2s ease-in-out infinite;
+}
+@keyframes fadeUp {
+  from { opacity:0; transform: translateY(28px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+@keyframes bounce {
+  0%,100% { transform: translateX(-50%) translateY(0); }
+  50%      { transform: translateX(-50%) translateY(8px); }
+}
+
+/* floating fish */
+.fish-float {
+  position: absolute; font-size: 1.8rem; pointer-events: none;
+  animation: fishSwim linear infinite;
+  opacity: 0.6;
+}
+@keyframes fishSwim {
+  0%   { left: -60px; }
+  100% { left: calc(100% + 60px); }
+}
+
+/* ── NAV CARDS (페이지 링크) ── */
+.nav-cards-section {
+  background: #fff;
+  padding: 60px 24px;
+}
+.nav-cards-section h2 {
+  font-family: 'Jua', sans-serif;
+  font-size: 1.8rem; text-align: center;
+  margin-bottom: 36px; color: var(--dark);
+}
+.nav-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px; max-width: 1000px; margin: 0 auto;
+}
+.nav-card {
+  display: flex; flex-direction: column;
+  align-items: center; text-align: center;
+  background: var(--surface);
+  border-radius: 20px; padding: 32px 20px;
+  text-decoration: none; color: var(--dark);
+  border: 2px solid transparent;
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+.nav-card:hover {
+  border-color: var(--river);
+  transform: translateY(-6px);
+  box-shadow: 0 12px 32px rgba(45,134,193,0.15);
+}
+.nav-card .nc-icon { font-size: 2.8rem; margin-bottom: 14px; }
+.nav-card .nc-title { font-family: 'Jua', sans-serif; font-size: 1.05rem; margin-bottom: 6px; }
+.nav-card .nc-desc  { font-size: 0.82rem; color: #777; line-height: 1.5; }
+
+/* ── MAP SECTION ── */
+.map-section {
+  padding: 70px 0 80px;
+  background: linear-gradient(180deg, #e8f5e9 0%, #e3f2fd 100%);
+}
+.map-section-header {
+  text-align: center; padding: 0 24px 36px;
+}
+.map-section-header h2 {
+  font-family: 'Jua', sans-serif;
+  font-size: clamp(1.5rem, 3.5vw, 2.2rem);
+  color: var(--dark); margin-bottom: 8px;
+}
+.map-section-header p { color: #555; font-size: 0.95rem; }
+
+/* ── DESKTOP: horizontal scroll map ── */
+.map-outer {
+  overflow-x: auto; overflow-y: visible;
+  padding: 0 24px 20px;
+  cursor: grab;
+  -webkit-overflow-scrolling: touch;
+}
+.map-outer:active { cursor: grabbing; }
+.map-outer::-webkit-scrollbar { height: 6px; }
+.map-outer::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 3px; }
+.map-outer::-webkit-scrollbar-thumb { background: var(--river); border-radius: 3px; }
+
+.map-canvas {
+  position: relative;
+  width: 1500px; height: 500px;
+}
+
+/* ── MOBILE: vertical map ── */
+.map-canvas-mobile { display: none; }
+
+@media (max-width: 768px) {
+  .map-outer { display: none; }
+  .map-canvas-mobile {
+    display: block;
+    padding: 0 16px;
+  }
+  .mobile-zone {
+    background: #fff;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  }
+  .mobile-zone-header {
+    padding: 18px 20px;
+    font-family: 'Jua', sans-serif;
+    font-size: 1.15rem;
+    color: #fff;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .mobile-zone-body { padding: 16px 20px 20px; }
+  .mobile-animal-list { list-style: none; }
+  .mobile-animal-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f4f8;
+  }
+  .mobile-animal-item:last-child { border-bottom: none; }
+  .mobile-animal-emoji { font-size: 2rem; flex-shrink: 0; }
+  .mobile-animal-info h4 { font-family: 'Jua', sans-serif; font-size: 1rem; margin-bottom: 2px; }
+  .mobile-animal-info p  { font-size: 0.82rem; color: #666; line-height: 1.5; }
+}
+
+/* ── ZONE LEGEND ── */
+.zone-legend {
+  display: flex; justify-content: center; gap: 28px; flex-wrap: wrap;
+  padding: 16px 24px 0;
+  font-size: 0.9rem;
+}
+.zone-legend-item { display: flex; align-items: center; gap: 8px; }
+.zone-dot { width: 16px; height: 16px; border-radius: 50%; }
+
+/* ── ANIMAL POPUP ── */
+.animal-modal {
+  display: none;
+  position: fixed; inset: 0; z-index: 800;
+  background: rgba(0,0,0,0.55);
+  align-items: center; justify-content: center;
+  padding: 20px;
+}
+.animal-modal.show { display: flex; }
+.modal-card {
+  background: #fff; border-radius: 24px;
+  padding: 40px 36px; max-width: 440px; width: 100%;
+  text-align: center;
+  animation: popIn 0.28s ease;
+  position: relative;
+}
+@keyframes popIn {
+  from { transform: scale(0.75); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+.modal-close {
+  position: absolute; top: 16px; right: 18px;
+  background: none; border: none; font-size: 1.5rem;
+  cursor: pointer; color: #aaa; line-height: 1;
+}
+.modal-emoji { font-size: 4.5rem; margin-bottom: 10px; }
+.modal-name  { font-family: 'Jua', sans-serif; font-size: 1.7rem; margin-bottom: 6px; }
+.modal-zone-badge { margin-bottom: 14px; }
+.modal-desc  { font-size: 0.95rem; color: #555; line-height: 1.75; margin-bottom: 24px; }
+.modal-btns  { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="site-nav">
+  <a class="nav-brand" href="index.html">🌊 <span>한강</span> 생태 탐험대</a>
+  <button class="nav-toggle" id="navToggle" aria-label="메뉴">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html" class="active">홈</a></li>
+    <li><a href="animals.html">동식물 도감</a></li>
+    <li><a href="quiz.html">퀴즈</a></li>
+    <li><a href="volunteer.html">봉사활동</a></li>
+    <li><a href="form.html">신청하기</a></li>
+    <li><a href="team.html">팀 소개</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <span class="fish-float" style="top:65%;animation-duration:9s;animation-delay:0s;">🐟</span>
+  <span class="fish-float" style="top:72%;animation-duration:13s;animation-delay:4s;font-size:1.3rem;">🐠</span>
+  <span class="fish-float" style="top:58%;animation-duration:11s;animation-delay:7s;">🐡</span>
+
+  <h1 class="hero-title">한강 생태 탐험대</h1>
+  <p class="hero-sub">서울을 가로지르는 한강, 그 속에 살아 숨쉬는 생명들을 만나보세요</p>
+  <div class="hero-btns">
+    <a href="#map" class="btn btn-primary">🗺️ 생태지도 보기</a>
+    <a href="animals.html" class="btn btn-accent">🦦 동식물 도감</a>
+    <a href="quiz.html" class="btn btn-ghost">🧠 퀴즈 풀기</a>
+  </div>
+
+  <div class="hero-scroll-hint">▼ 스크롤해서 탐험하기</div>
+
+  <svg class="hero-bg-wave" viewBox="0 0 1440 140" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,80 C180,20 360,140 540,80 C720,20 900,120 1080,70 C1260,20 1380,110 1440,80 L1440,140 L0,140 Z" fill="#e8f5e9"/>
+  </svg>
+</section>
+
+<!-- 페이지 링크 카드 -->
+<section class="nav-cards-section">
+  <h2>무엇을 탐험할까요?</h2>
+  <div class="nav-cards">
+    <a href="animals.html" class="nav-card">
+      <div class="nc-icon">🦦</div>
+      <div class="nc-title">동식물 도감</div>
+      <div class="nc-desc">조류·포유류·식물·생태위협종을 한눈에</div>
+    </a>
+    <a href="quiz.html" class="nav-card">
+      <div class="nc-icon">🧠</div>
+      <div class="nc-title">생태 퀴즈</div>
+      <div class="nc-desc">도감을 공부하고 퀴즈로 실력을 확인해요</div>
+    </a>
+    <a href="volunteer.html" class="nav-card">
+      <div class="nc-icon">🌱</div>
+      <div class="nc-title">봉사활동</div>
+      <div class="nc-desc">한강 생태계 보호 봉사활동 정보 모음</div>
+    </a>
+    <a href="form.html" class="nav-card">
+      <div class="nc-icon">📋</div>
+      <div class="nc-title">봉사 신청</div>
+      <div class="nc-desc">원하는 봉사활동에 지금 바로 신청해요</div>
+    </a>
+    <a href="team.html" class="nav-card">
+      <div class="nc-icon">👥</div>
+      <div class="nc-title">팀 소개</div>
+      <div class="nc-desc">이 사이트를 만든 탐험대원들을 소개해요</div>
+    </a>
+  </div>
+</section>
+
+<!-- MAP SECTION -->
+<section class="map-section" id="map">
+  <div class="map-section-header">
+    <h2>🗺️ 한강 생태 지도</h2>
+    <p>각 구역의 생물 이름을 클릭하면 자세한 정보를 볼 수 있어요</p>
+  </div>
+
+  <!-- DESKTOP MAP (가로 스크롤) -->
+  <div class="map-outer" id="mapOuter">
+    <div class="map-canvas">
+      <svg width="1500" height="500" viewBox="0 0 1500 500" xmlns="http://www.w3.org/2000/svg">
+        <!-- Sky & ground -->
+        <rect width="1500" height="500" fill="#e8f5e9"/>
+        <!-- Ground strips -->
+        <rect x="0" y="0" width="1500" height="120" fill="#c8e6c9" rx="0"/>
+        <rect x="0" y="360" width="1500" height="140" fill="#c8e6c9"/>
+
+        <!-- Zone background shades -->
+        <rect x="0"    y="0" width="500"  height="500" fill="rgba(76,175,80,0.06)"/>
+        <rect x="500"  y="0" width="500"  height="500" fill="rgba(33,150,243,0.06)"/>
+        <rect x="1000" y="0" width="500"  height="500" fill="rgba(3,169,244,0.09)"/>
+
+        <!-- Zone dividers -->
+        <line x1="500" y1="0" x2="500" y2="500" stroke="rgba(0,0,0,0.12)" stroke-width="1.5" stroke-dasharray="8,6"/>
+        <line x1="1000" y1="0" x2="1000" y2="500" stroke="rgba(0,0,0,0.12)" stroke-width="1.5" stroke-dasharray="8,6"/>
+
+        <!-- RIVER PATH (굴곡진 한강) -->
+        <!-- Main water body -->
+        <path d="
+          M 0,175
+          C 60,155 120,200 180,185
+          C 240,170 300,210 370,195
+          C 420,183 460,165 500,172
+          C 550,180 580,215 640,205
+          C 700,195 740,170 800,178
+          C 860,186 890,215 950,205
+          C 1010,195 1050,168 1110,175
+          C 1170,182 1220,210 1280,198
+          C 1340,186 1400,165 1500,172
+          L 1500,305
+          C 1400,318 1340,298 1280,310
+          C 1220,322 1170,342 1110,332
+          C 1050,322 1010,295 950,305
+          C 890,315 860,342 800,332
+          C 740,322 700,295 640,305
+          C 580,315 550,342 500,332
+          C 460,322 420,298 370,310
+          C 300,325 240,342 180,328
+          C 120,314 60,295 0,308
+          Z
+        " fill="url(#riverGrad)" opacity="0.92"/>
+
+        <!-- River shimmer lines -->
+        <path d="M 50,230 C 150,222 250,238 350,228 C 450,218 550,234 650,225 C 750,216 850,232 950,222 C 1050,212 1150,228 1300,220" stroke="rgba(255,255,255,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M 80,260 C 200,252 320,268 440,258 C 560,248 680,264 800,255 C 920,246 1040,262 1180,252 C 1320,242 1420,258 1480,250" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+
+        <!-- Island (여의도 느낌) -->
+        <ellipse cx="760" cy="255" rx="55" ry="24" fill="#a5d6a7" opacity="0.8"/>
+        <text x="760" y="259" text-anchor="middle" font-size="10" fill="#2e7d32" font-family="Noto Sans KR">여의도</text>
+
+        <!-- Gradient def -->
+        <defs>
+          <linearGradient id="riverGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="#64b5f6"/>
+            <stop offset="50%"  stop-color="#2196f3"/>
+            <stop offset="100%" stop-color="#1565c0"/>
+          </linearGradient>
+          <linearGradient id="upGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%"  stop-color="#388e3c"/>
+            <stop offset="100%" stop-color="#66bb6a"/>
+          </linearGradient>
+          <linearGradient id="midGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%"  stop-color="#1565c0"/>
+            <stop offset="100%" stop-color="#42a5f5"/>
+          </linearGradient>
+          <linearGradient id="downGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%"  stop-color="#0d47a1"/>
+            <stop offset="100%" stop-color="#1e88e5"/>
+          </linearGradient>
+        </defs>
+
+        <!-- ── ZONE LABELS ── -->
+        <rect x="20"   y="14" width="110" height="36" rx="18" fill="url(#upGrad)"/>
+        <text x="75"   y="37" text-anchor="middle" font-size="15" fill="#fff" font-family="Jua, sans-serif">🏔️ 상류</text>
+
+        <rect x="530"  y="14" width="110" height="36" rx="18" fill="url(#midGrad)"/>
+        <text x="585"  y="37" text-anchor="middle" font-size="15" fill="#fff" font-family="Jua, sans-serif">🌿 중류</text>
+
+        <rect x="1030" y="14" width="110" height="36" rx="18" fill="url(#downGrad)"/>
+        <text x="1085" y="37" text-anchor="middle" font-size="15" fill="#fff" font-family="Jua, sans-serif">🌊 하류</text>
+
+        <!-- Trees / scenery -->
+        <text x="60"  y="115" font-size="28">🌲</text>
+        <text x="130" y="110" font-size="32">🌳</text>
+        <text x="220" y="118" font-size="24">🌲</text>
+        <text x="310" y="112" font-size="28">🌳</text>
+        <text x="390" y="116" font-size="24">🌿</text>
+        <text x="60"  y="390" font-size="26">🪨</text>
+        <text x="140" y="400" font-size="22">🪨</text>
+        <text x="240" y="385" font-size="28">🌾</text>
+
+        <text x="560" y="112" font-size="28">🌿</text>
+        <text x="640" y="108" font-size="30">🌳</text>
+        <text x="730" y="114" font-size="24">🌿</text>
+        <text x="850" y="110" font-size="28">🌳</text>
+        <text x="920" y="115" font-size="24">🌿</text>
+        <text x="560" y="395" font-size="26">🌾</text>
+        <text x="660" y="388" font-size="28">🌾</text>
+        <text x="800" y="395" font-size="26">🌾</text>
+
+        <text x="1060" y="110" font-size="26">🌴</text>
+        <text x="1160" y="108" font-size="30">🌴</text>
+        <text x="1260" y="114" font-size="24">🌿</text>
+        <text x="1380" y="110" font-size="28">🌴</text>
+        <text x="1060" y="395" font-size="28">🌊</text>
+        <text x="1200" y="390" font-size="26">🌊</text>
+        <text x="1380" y="398" font-size="24">🌊</text>
+
+        <!-- ── 상류 생물 스팟 (4마리) ── -->
+        <!-- 수달 -->
+        <g class="bio-spot" data-key="otter" style="cursor:pointer;">
+          <circle cx="90" cy="200" r="22" fill="#fff" stroke="#388e3c" stroke-width="2.5" opacity="0.92"/>
+          <text x="90" y="208" text-anchor="middle" font-size="22">🦦</text>
+        </g>
+        <text x="90" y="238" text-anchor="middle" font-size="12" fill="#1b5e20" font-family="Jua,sans-serif" font-weight="bold">수달</text>
+
+        <!-- 산천어 -->
+        <g class="bio-spot" data-key="trout" style="cursor:pointer;">
+          <circle cx="220" cy="260" r="22" fill="#fff" stroke="#388e3c" stroke-width="2.5" opacity="0.92"/>
+          <text x="220" y="268" text-anchor="middle" font-size="22">🐟</text>
+        </g>
+        <text x="220" y="298" text-anchor="middle" font-size="12" fill="#1b5e20" font-family="Jua,sans-serif" font-weight="bold">산천어</text>
+
+        <!-- 흰꼬리수리 -->
+        <g class="bio-spot" data-key="eagle" style="cursor:pointer;">
+          <circle cx="340" cy="155" r="22" fill="#fff" stroke="#388e3c" stroke-width="2.5" opacity="0.92"/>
+          <text x="340" y="163" text-anchor="middle" font-size="22">🦅</text>
+        </g>
+        <text x="340" y="193" text-anchor="middle" font-size="12" fill="#1b5e20" font-family="Jua,sans-serif" font-weight="bold">흰꼬리수리</text>
+
+        <!-- 도롱뇽 -->
+        <g class="bio-spot" data-key="salamander" style="cursor:pointer;">
+          <circle cx="440" cy="330" r="22" fill="#fff" stroke="#388e3c" stroke-width="2.5" opacity="0.92"/>
+          <text x="440" y="338" text-anchor="middle" font-size="22">🦎</text>
+        </g>
+        <text x="440" y="368" text-anchor="middle" font-size="12" fill="#1b5e20" font-family="Jua,sans-serif" font-weight="bold">도롱뇽</text>
+
+        <!-- ── 중류 생물 스팟 (4마리) ── -->
+        <!-- 왜가리 -->
+        <g class="bio-spot" data-key="heron" style="cursor:pointer;">
+          <circle cx="570" cy="165" r="22" fill="#fff" stroke="#1565c0" stroke-width="2.5" opacity="0.92"/>
+          <text x="570" y="173" text-anchor="middle" font-size="22">🦢</text>
+        </g>
+        <text x="570" y="203" text-anchor="middle" font-size="12" fill="#0d47a1" font-family="Jua,sans-serif" font-weight="bold">왜가리</text>
+
+        <!-- 잉어 -->
+        <g class="bio-spot" data-key="carp" style="cursor:pointer;">
+          <circle cx="700" cy="240" r="22" fill="#fff" stroke="#1565c0" stroke-width="2.5" opacity="0.92"/>
+          <text x="700" y="248" text-anchor="middle" font-size="22">🐠</text>
+        </g>
+        <text x="700" y="278" text-anchor="middle" font-size="12" fill="#0d47a1" font-family="Jua,sans-serif" font-weight="bold">잉어</text>
+
+        <!-- 청둥오리 -->
+        <g class="bio-spot" data-key="duck" style="cursor:pointer;">
+          <circle cx="850" cy="175" r="22" fill="#fff" stroke="#1565c0" stroke-width="2.5" opacity="0.92"/>
+          <text x="850" y="183" text-anchor="middle" font-size="22">🦆</text>
+        </g>
+        <text x="850" y="213" text-anchor="middle" font-size="12" fill="#0d47a1" font-family="Jua,sans-serif" font-weight="bold">청둥오리</text>
+
+        <!-- 자라 -->
+        <g class="bio-spot" data-key="turtle" style="cursor:pointer;">
+          <circle cx="960" cy="310" r="22" fill="#fff" stroke="#1565c0" stroke-width="2.5" opacity="0.92"/>
+          <text x="960" y="318" text-anchor="middle" font-size="22">🐢</text>
+        </g>
+        <text x="960" y="348" text-anchor="middle" font-size="12" fill="#0d47a1" font-family="Jua,sans-serif" font-weight="bold">자라</text>
+
+        <!-- ── 하류 생물 스팟 (4마리) ── -->
+        <!-- 가마우지 -->
+        <g class="bio-spot" data-key="cormorant" style="cursor:pointer;">
+          <circle cx="1090" cy="160" r="22" fill="#fff" stroke="#0d47a1" stroke-width="2.5" opacity="0.92"/>
+          <text x="1090" y="168" text-anchor="middle" font-size="22">🐦</text>
+        </g>
+        <text x="1090" y="198" text-anchor="middle" font-size="12" fill="#0d47a1" font-family="Jua,sans-serif" font-weight="bold">가마우지</text>
+
+        <!-- 배스(외래종) -->
+        <g class="bio-spot" data-key="bass" style="cursor:pointer;">
+          <circle cx="1230" cy="245" r="22" fill="#fff" stroke="#c62828" stroke-width="2.5" opacity="0.92"/>
+          <text x="1230" y="253" text-anchor="middle" font-size="22">🐡</text>
+        </g>
+        <text x="1230" y="283" text-anchor="middle" font-size="12" fill="#b71c1c" font-family="Jua,sans-serif" font-weight="bold">배스⚠️</text>
+
+        <!-- 갈매기 -->
+        <g class="bio-spot" data-key="gull" style="cursor:pointer;">
+          <circle cx="1370" cy="155" r="22" fill="#fff" stroke="#0d47a1" stroke-width="2.5" opacity="0.92"/>
+          <text x="1370" y="163" text-anchor="middle" font-size="22">🕊️</text>
+        </g>
+        <text x="1370" y="193" text-anchor="middle" font-size="12" fill="#0d47a1" font-family="Jua,sans-serif" font-weight="bold">갈매기</text>
+
+        <!-- 물억새 (식물) -->
+        <g class="bio-spot" data-key="silvergrass" style="cursor:pointer;">
+          <circle cx="1130" cy="340" r="22" fill="#fff" stroke="#0d47a1" stroke-width="2.5" opacity="0.92"/>
+          <text x="1130" y="348" text-anchor="middle" font-size="22">🌾</text>
+        </g>
+        <text x="1130" y="378" text-anchor="middle" font-size="12" fill="#0d47a1" font-family="Jua,sans-serif" font-weight="bold">물억새</text>
+
+      </svg>
+    </div>
+  </div>
+
+  <!-- MOBILE MAP (세로) -->
+  <div class="map-canvas-mobile">
+    <div class="mobile-zone">
+      <div class="mobile-zone-header" style="background:linear-gradient(135deg,#388e3c,#66bb6a);">
+        🏔️ 상류 <small style="font-size:0.8rem;opacity:0.85;">(강원도·경기 북부)</small>
+      </div>
+      <div class="mobile-zone-body">
+        <ul class="mobile-animal-list" id="mobileUp"></ul>
+      </div>
+    </div>
+    <div class="mobile-zone">
+      <div class="mobile-zone-header" style="background:linear-gradient(135deg,#1565c0,#42a5f5);">
+        🌿 중류 <small style="font-size:0.8rem;opacity:0.85;">(경기·서울 외곽)</small>
+      </div>
+      <div class="mobile-zone-body">
+        <ul class="mobile-animal-list" id="mobileMid"></ul>
+      </div>
+    </div>
+    <div class="mobile-zone">
+      <div class="mobile-zone-header" style="background:linear-gradient(135deg,#0d47a1,#1e88e5);">
+        🌊 하류 <small style="font-size:0.8rem;opacity:0.85;">(서울 도심·인천)</small>
+      </div>
+      <div class="mobile-zone-body">
+        <ul class="mobile-animal-list" id="mobileDown"></ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Zone legend -->
+  <div class="zone-legend">
+    <div class="zone-legend-item"><div class="zone-dot" style="background:#388e3c;"></div> 상류 생물</div>
+    <div class="zone-legend-item"><div class="zone-dot" style="background:#1565c0;"></div> 중류 생물</div>
+    <div class="zone-legend-item"><div class="zone-dot" style="background:#0d47a1;"></div> 하류 생물</div>
+    <div class="zone-legend-item"><div class="zone-dot" style="background:#c62828;"></div> ⚠️ 생태위협종</div>
+  </div>
+</section>
+
+<!-- ANIMAL MODAL -->
+<div class="animal-modal" id="animalModal">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-emoji" id="mEmoji"></div>
+    <div class="modal-name"  id="mName"></div>
+    <div class="modal-zone-badge" id="mBadge"></div>
+    <div class="modal-desc"  id="mDesc"></div>
+    <div class="modal-btns">
+      <a href="animals.html" class="btn btn-primary" id="mAnimalLink">📖 도감에서 보기</a>
+      <a href="quiz.html"    class="btn btn-accent">🧠 퀴즈 풀기</a>
+      <button class="btn btn-ghost" onclick="closeModal()">닫기</button>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <p>🌊 한강 생태 탐험대 | 교육 목적 프로젝트</p>
+  <p>한강사업본부 <a href="https://hangang.seoul.go.kr" target="_blank">hangang.seoul.go.kr</a></p>
+</footer>
+
+<script>
+// ── 생물 데이터 ──
+const bioData = {
+  otter:       { emoji:'🦦', name:'수달',       zone:'상류', zoneBadge:'badge-green',  desc:'한강 최상위 포식자. 깨끗한 물에서만 살아 생태 건강 지표가 되는 멸종위기 1급 동물이에요. 주로 물고기를 사냥하며 야행성이에요.' },
+  trout:       { emoji:'🐟', name:'산천어',      zone:'상류', zoneBadge:'badge-green',  desc:'연어과 물고기로 차갑고 맑은 상류에 서식해요. 수온 20°C 이상이면 살기 어렵습니다. 강원도 화천 산천어 축제로 유명해요.' },
+  eagle:       { emoji:'🦅', name:'흰꼬리수리',  zone:'상류', zoneBadge:'badge-green',  desc:'날개 폭 2m 이상의 대형 맹금류. 겨울 철새로 시베리아에서 날아와요. 높은 하늘에서 물고기를 낚아채는 모습이 장관이에요.' },
+  salamander:  { emoji:'🦎', name:'도롱뇽',      zone:'상류', zoneBadge:'badge-green',  desc:'맑은 계곡 상류에 사는 양서류. 알을 낳는 방식이 독특하고 수질 오염에 매우 민감해 환경 지표종으로 활용돼요.' },
+  heron:       { emoji:'🦢', name:'왜가리',      zone:'중류', zoneBadge:'badge-blue',   desc:'한강에서 가장 쉽게 볼 수 있는 대형 조류예요. 물가에 꼼짝않고 서서 물고기를 기다리다 번개처럼 낚아챕니다.' },
+  carp:        { emoji:'🐠', name:'잉어',        zone:'중류', zoneBadge:'badge-blue',   desc:'한강을 대표하는 토종 물고기. 최대 100년 이상 살며 동아시아에서 행운과 장수의 상징이에요. 수염이 2쌍 있어요.' },
+  duck:        { emoji:'🦆', name:'청둥오리',    zone:'중류', zoneBadge:'badge-blue',   desc:'수컷은 반짝이는 초록 머리가 특징. 한강에서 번식하며 연중 관찰 가능한 텃새예요. 꼬리를 세우고 잠수하며 먹이를 찾아요.' },
+  turtle:      { emoji:'🐢', name:'자라',        zone:'중류', zoneBadge:'badge-blue',   desc:'모래밭에 일광욕하는 모습을 볼 수 있어요. 거북이와 달리 코가 길쭉해요. 멸종위기종으로 보호가 필요해요.' },
+  cormorant:   { emoji:'🐦', name:'민물가마우지',zone:'하류', zoneBadge:'badge-blue',   desc:'잠수 실력이 뛰어난 물새. 날개에 기름기가 적어 잠수 후 날개를 펼쳐 말려요. 동아시아 전통 낚시에 이용된 새예요.' },
+  bass:        { emoji:'🐡', name:'배스(블루길)', zone:'하류', zoneBadge:'badge-red',    desc:'⚠️ 북미 원산 외래종. 엄청난 식욕으로 토종 물고기를 위협하는 생태계 교란종이에요. 무단 방류 시 법적 처벌을 받아요.' },
+  gull:        { emoji:'🕊️', name:'갈매기',      zone:'하류', zoneBadge:'badge-blue',   desc:'하류 바다와 만나는 지점에서 볼 수 있어요. 물고기와 먹이를 찾아 한강을 오르내리며 활발하게 비행해요.' },
+  silvergrass: { emoji:'🌾', name:'물억새',      zone:'하류', zoneBadge:'badge-blue',   desc:'한강 하류 습지대의 대표 식물. 가을이면 은빛 이삭이 물결처럼 출렁이는 장관을 연출해요. 철새 서식지를 만들어줘요.' },
+};
+
+const mobileZones = {
+  up:   ['otter','trout','eagle','salamander'],
+  mid:  ['heron','carp','duck','turtle'],
+  down: ['cormorant','bass','gull','silvergrass'],
+};
+
+// 모바일 리스트 생성
+['up','mid','down'].forEach(zoneId => {
+  const ul = document.getElementById('mobile'+zoneId.charAt(0).toUpperCase()+zoneId.slice(1));
+  mobileZones[zoneId].forEach(key => {
+    const d = bioData[key];
+    const li = document.createElement('li');
+    li.className = 'mobile-animal-item';
+    li.style.cursor = 'pointer';
+    li.innerHTML = `
+      <span class="mobile-animal-emoji">${d.emoji}</span>
+      <div class="mobile-animal-info">
+        <h4>${d.name} <span class="badge ${d.zoneBadge}">${d.zone}</span></h4>
+        <p>${d.desc.substring(0,60)}…</p>
+      </div>`;
+    li.onclick = () => openModal(key);
+    ul.appendChild(li);
+  });
+});
+
+// SVG 클릭 이벤트
+document.querySelectorAll('.bio-spot').forEach(el => {
+  el.addEventListener('click', () => openModal(el.dataset.key));
+});
+
+function openModal(key) {
+  const d = bioData[key];
+  if (!d) return;
+  document.getElementById('mEmoji').textContent = d.emoji;
+  document.getElementById('mName').textContent  = d.name;
+  document.getElementById('mBadge').innerHTML   = `<span class="badge ${d.zoneBadge}">${d.zone}</span>`;
+  document.getElementById('mDesc').textContent  = d.desc;
+  document.getElementById('animalModal').classList.add('show');
+}
+function closeModal() {
+  document.getElementById('animalModal').classList.remove('show');
+}
+document.getElementById('animalModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('animalModal')) closeModal();
+});
+
+// 드래그 스크롤 (데스크탑)
+const outer = document.getElementById('mapOuter');
+let drag = false, startX, sl;
+outer.addEventListener('mousedown', e => { drag=true; startX=e.pageX-outer.offsetLeft; sl=outer.scrollLeft; });
+outer.addEventListener('mouseleave', ()=>drag=false);
+outer.addEventListener('mouseup',   ()=>drag=false);
+outer.addEventListener('mousemove', e => {
+  if (!drag) return;
+  e.preventDefault();
+  outer.scrollLeft = sl - (e.pageX - outer.offsetLeft - startX);
+});
+
+// 햄버거 메뉴
+document.getElementById('navToggle').addEventListener('click', () => {
+  document.getElementById('navLinks').classList.toggle('open');
+});
+</script>
+</body>
+</html>

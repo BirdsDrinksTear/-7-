@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>동식물 도감 - 한강 생태 탐험대</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.page-hero { background: linear-gradient(135deg,#1a3c5e 0%,#2e86c1 60%,#27ae60 100%); padding: calc(var(--nav-h)+52px) 24px 52px; text-align:center; }
+.page-hero h1 { font-family:'Jua',sans-serif; font-size:clamp(1.8rem,4vw,2.8rem); color:#fff; margin-bottom:10px; }
+.page-hero p  { color:rgba(255,255,255,0.85); font-size:1rem; max-width:520px; margin:0 auto; }
+
+/* filter tabs */
+.filter-bar { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; padding:36px 24px 0; }
+.filter-btn {
+  padding:9px 22px; border-radius:24px; border:2px solid #d0dde8;
+  background:#fff; font-family:'Jua',sans-serif; font-size:0.9rem;
+  cursor:pointer; transition:all 0.18s; color:var(--dark);
+}
+.filter-btn:hover { border-color:var(--river); color:var(--river); }
+.filter-btn.active { background:var(--river-dark); border-color:var(--river-dark); color:#fff; }
+
+/* grid */
+.animal-grid {
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px,1fr));
+  gap:22px;
+  max-width:1140px; margin:32px auto 80px; padding:0 24px;
+}
+.animal-card {
+  background:#fff; border-radius:20px;
+  box-shadow:0 4px 18px rgba(0,0,0,0.07);
+  overflow:hidden;
+  transition:transform 0.2s, box-shadow 0.2s;
+  cursor:pointer;
+}
+.animal-card:hover { transform:translateY(-6px); box-shadow:0 12px 32px rgba(0,0,0,0.13); }
+.animal-card.hidden { display:none; }
+
+.ac-top {
+  padding:28px 20px 20px;
+  display:flex; align-items:center; gap:16px;
+}
+.ac-emoji { font-size:3.2rem; flex-shrink:0; }
+.ac-header h3 { font-family:'Jua',sans-serif; font-size:1.15rem; margin-bottom:4px; }
+.ac-header .badges { display:flex; gap:6px; flex-wrap:wrap; }
+
+.ac-body { padding:0 20px 20px; }
+.ac-desc { font-size:0.88rem; color:#555; line-height:1.7; margin-bottom:14px; }
+.ac-facts { list-style:none; }
+.ac-facts li {
+  font-size:0.82rem; color:#444;
+  padding:5px 0; border-bottom:1px solid #f0f4f8;
+  display:flex; gap:6px;
+}
+.ac-facts li:last-child { border-bottom:none; }
+.ac-facts li::before { content:'•'; color:var(--river); font-weight:700; }
+
+/* detail modal */
+.detail-modal {
+  display:none; position:fixed; inset:0; z-index:800;
+  background:rgba(0,0,0,0.55);
+  align-items:center; justify-content:center; padding:20px;
+}
+.detail-modal.show { display:flex; }
+.detail-card {
+  background:#fff; border-radius:24px;
+  padding:40px 36px; max-width:500px; width:100%;
+  max-height:88vh; overflow-y:auto;
+  animation:popIn 0.25s ease;
+  position:relative;
+}
+@keyframes popIn { from{transform:scale(0.8);opacity:0} to{transform:scale(1);opacity:1} }
+.detail-close {
+  position:absolute; top:16px; right:18px;
+  background:none; border:none; font-size:1.5rem; cursor:pointer; color:#aaa;
+}
+.d-emoji { font-size:5rem; text-align:center; margin-bottom:10px; }
+.d-name  { font-family:'Jua',sans-serif; font-size:1.8rem; text-align:center; margin-bottom:8px; }
+.d-badges { text-align:center; margin-bottom:16px; display:flex; gap:6px; justify-content:center; flex-wrap:wrap; }
+.d-desc  { font-size:0.97rem; color:#444; line-height:1.8; margin-bottom:20px; }
+.d-facts { background:#f6fafd; border-radius:14px; padding:16px 20px; margin-bottom:22px; }
+.d-facts h4 { font-family:'Jua',sans-serif; font-size:0.95rem; color:var(--river-dark); margin-bottom:10px; }
+.d-facts ul { list-style:none; }
+.d-facts ul li { font-size:0.88rem; color:#444; padding:4px 0; border-bottom:1px solid #e8f0f7; display:flex; gap:8px; }
+.d-facts ul li:last-child { border-bottom:none; }
+.d-facts ul li::before { content:'▸'; color:var(--river); }
+.d-quiz-hint { background:#fff8e8; border:1px solid #f5c842; border-radius:12px; padding:12px 16px; font-size:0.85rem; color:#7d5a00; text-align:center; }
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <a class="nav-brand" href="index.html">🌊 <span>한강</span> 생태 탐험대</a>
+  <button class="nav-toggle" id="navToggle"><span></span><span></span><span></span></button>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html">홈</a></li>
+    <li><a href="animals.html" class="active">동식물 도감</a></li>
+    <li><a href="quiz.html">퀴즈</a></li>
+    <li><a href="volunteer.html">봉사활동</a></li>
+    <li><a href="form.html">신청하기</a></li>
+    <li><a href="team.html">팀 소개</a></li>
+  </ul>
+</nav>
+
+<div class="page-hero">
+  <h1>🦦 동식물 도감</h1>
+  <p>한강에 살고 있는 다양한 생물들을 만나보세요.<br>카드를 클릭하면 더 자세한 정보를 볼 수 있어요!</p>
+</div>
+
+<div class="filter-bar">
+  <button class="filter-btn active" data-cat="all">전체 보기</button>
+  <button class="filter-btn" data-cat="bird">🐦 조류</button>
+  <button class="filter-btn" data-cat="mammal">🦦 포유류</button>
+  <button class="filter-btn" data-cat="fish">🐟 어류</button>
+  <button class="filter-btn" data-cat="plant">🌿 식물</button>
+  <button class="filter-btn" data-cat="invasive">⚠️ 생태위협종</button>
+</div>
+
+<div class="animal-grid" id="animalGrid"></div>
+
+<!-- Detail Modal -->
+<div class="detail-modal" id="detailModal">
+  <div class="detail-card">
+    <button class="detail-close" onclick="closeDetail()">✕</button>
+    <div class="d-emoji"  id="dEmoji"></div>
+    <div class="d-name"   id="dName"></div>
+    <div class="d-badges" id="dBadges"></div>
+    <div class="d-desc"   id="dDesc"></div>
+    <div class="d-facts">
+      <h4>📋 주요 정보</h4>
+      <ul id="dFacts"></ul>
+    </div>
+    <div class="d-quiz-hint">💡 이 내용은 퀴즈에 나올 수 있어요! <a href="quiz.html" style="color:var(--accent);font-weight:700;">퀴즈 풀러 가기 →</a></div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <p>🌊 한강 생태 탐험대 | 교육 목적 프로젝트</p>
+</footer>
+
+<script>
+const animals = [
+  /* ── 조류 ── */
+  { key:'heron', emoji:'🦢', name:'왜가리', cat:'bird', zone:'중류', zoneBadge:'badge-blue',
+    short:'한강 최고의 사냥꾼. 물가에 꼼짝않고 서 있다가 순간 낚아채요.',
+    desc:'왜가리는 한강에서 가장 쉽게 볼 수 있는 대형 조류예요. 키가 약 90cm이고 날개 폭은 1.8m에 달해요. 물가에서 긴 목을 S자로 구부리고 먹이를 기다리다 순식간에 낚아채는 전략적인 사냥꾼이에요.',
+    facts:['분류: 황새목 왜가릿과','크기: 몸길이 약 90cm, 날개 폭 1.6~1.8m','먹이: 물고기, 개구리, 뱀, 작은 포유류','특징: 비행 시 목을 S자로 접음','서식지: 강, 호수, 논, 습지'] },
+  { key:'duck', emoji:'🦆', name:'청둥오리', cat:'bird', zone:'중류', zoneBadge:'badge-blue',
+    short:'수컷의 초록빛 머리가 특징. 한강을 대표하는 텃새예요.',
+    desc:'청둥오리는 한강에서 연중 볼 수 있는 텃새예요. 수컷은 금속성 광택의 초록 머리, 암컷은 갈색 얼룩무늬가 특징이에요. 꼬리를 하늘로 세우고 머리를 물에 담근 채 수생식물을 먹는 "dabbling" 방식으로 먹이를 구해요.',
+    facts:['분류: 기러기목 오리과','크기: 몸길이 약 57cm','먹이: 수생식물, 씨앗, 곤충, 작은 물고기','특징: 수컷 머리에 금속성 초록빛','번식: 강가 풀밭에 8~12개 알 산란'] },
+  { key:'eagle', emoji:'🦅', name:'흰꼬리수리', cat:'bird', zone:'상류', zoneBadge:'badge-green',
+    short:'날개 폭 2m 이상의 한강 최대 맹금류. 겨울 철새예요.',
+    desc:'흰꼬리수리는 한강에서 볼 수 있는 가장 큰 새 중 하나예요. 시베리아에서 겨울을 나러 한국을 방문하는 철새로 11월~3월에 주로 관찰돼요. 강에서 물고기를 낚아채거나 죽은 새를 먹기도 해요. 환경부 지정 멸종위기 1급이에요.',
+    facts:['분류: 수리목 수리과','크기: 날개 폭 1.9~2.3m, 무게 4~7kg','먹이: 물고기, 오리류, 죽은 동물','보호: 멸종위기 야생동물 1급','시기: 겨울 철새 (11월~3월)'] },
+  { key:'cormorant', emoji:'🐦', name:'민물가마우지', cat:'bird', zone:'하류', zoneBadge:'badge-blue',
+    short:'잠수의 달인. 잠수 후 날개를 펼쳐 말리는 독특한 모습이 인상적이에요.',
+    desc:'민물가마우지는 한강 하류에 집단 서식하는 물새예요. 기름샘이 발달하지 않아 깃털이 물에 젖기 쉽지만, 덕분에 부력이 줄어 물속 10m 이상까지 잠수할 수 있어요. 일본과 중국에서는 목에 끈을 묶어 낚시에 활용하는 전통이 있어요.',
+    facts:['분류: 사다새목 가마우지과','크기: 몸길이 약 80~100cm','먹이: 물고기(하루 400~500g 섭취)','특징: 잠수 후 날개 펼쳐 건조','눈 색깔: 신비로운 파란빛~초록빛'] },
+  { key:'gull', emoji:'🕊️', name:'갈매기', cat:'bird', zone:'하류', zoneBadge:'badge-blue',
+    short:'바다와 강의 경계에 사는 새. 한강 하류에서 자주 볼 수 있어요.',
+    desc:'갈매기는 한강과 바다가 만나는 하류 지점에서 볼 수 있어요. 뛰어난 비행 능력과 넓은 식성으로 물고기, 게, 음식물 쓰레기까지 다양하게 먹어요. 무리를 지어 생활하며 텃새와 철새 모두 관찰돼요.',
+    facts:['분류: 도요목 갈매기과','크기: 몸길이 40~65cm (종마다 다름)','먹이: 물고기, 갑각류, 각종 유기물','서식지: 해안가, 강 하구','특징: 물 위에 뜨면서 먹이 낚아채기'] },
+
+  /* ── 포유류 ── */
+  { key:'otter', emoji:'🦦', name:'수달', cat:'mammal', zone:'상류', zoneBadge:'badge-green',
+    short:'한강 생태계의 건강 지표. 멸종위기 1급 동물이에요.',
+    desc:'수달은 한강 생태계의 최상위 포식자로 맑고 깨끗한 물에서만 살 수 있어요. 몸에 방수 기능을 가진 촘촘한 털이 있고, 물갈퀴 발로 빠르게 수영해 물고기를 잡아요. 한강에서 수달이 발견된다는 것은 수질이 좋아졌다는 신호예요.',
+    facts:['분류: 식육목 족제빗과','크기: 몸길이 65~75cm, 꼬리 40~50cm','먹이: 물고기(주), 개구리, 가재','보호: 멸종위기 야생동물 1급','특징: 물속에서 눈을 뜰 수 있음'] },
+
+  /* ── 어류 ── */
+  { key:'trout', emoji:'🐟', name:'산천어', cat:'fish', zone:'상류', zoneBadge:'badge-green',
+    short:'연어의 친척. 차갑고 맑은 상류에만 살아요.',
+    desc:'산천어는 연어과에 속하는 물고기로 수온 20°C 이하의 맑고 차가운 물에서만 살 수 있어요. 측면의 아름다운 분홍빛 줄무늬가 특징이에요. 강원도 화천의 산천어 축제로 유명하며, 바다로 내려가지 않고 민물에서만 사는 육봉형이에요.',
+    facts:['분류: 연어목 연어과','크기: 20~40cm','먹이: 수서곤충, 작은 물고기','서식 수온: 15°C 이하 선호','특징: 몸 옆면의 분홍·붉은 줄무늬'] },
+  { key:'carp', emoji:'🐠', name:'잉어', cat:'fish', zone:'중류', zoneBadge:'badge-blue',
+    short:'100년 이상 사는 한강의 터줏대감. 행운과 장수의 상징이에요.',
+    desc:'잉어는 한강에서 가장 친숙한 토종 물고기예요. 환경 적응력이 뛰어나 오염된 물에서도 살 수 있어요. 최대 100년 이상 살며 1m가 넘게 자라기도 해요. 입 주위에 2쌍(4개)의 수염으로 먹이를 감지하고, 바닥을 헤집어 먹이를 찾아요.',
+    facts:['분류: 잉어목 잉어과','크기: 보통 30~80cm, 최대 1m 이상','먹이: 수생식물, 무척추동물, 유기물','수명: 최대 100년 이상','특징: 입 주위 4개의 수염'] },
+  { key:'turtle', emoji:'🐢', name:'자라', cat:'fish', zone:'중류', zoneBadge:'badge-blue',
+    short:'거북이처럼 생겼지만 코가 길쭉한 게 특징. 멸종위기종이에요.',
+    desc:'자라는 거북이와 비슷하지만 등딱지가 부드럽고 코끝이 뾰족하게 튀어나온 것이 특징이에요. 모래밭에서 일광욕하는 모습을 볼 수 있어요. 수질 오염과 남획으로 개체수가 줄어 현재 보호가 필요한 종이에요.',
+    facts:['분류: 거북목 자라과','크기: 등딱지 길이 15~35cm','먹이: 물고기, 개구리, 수생곤충','특징: 부드러운 가죽 등딱지','서식지: 강, 호수의 모래밭'] },
+
+  /* ── 식물 ── */
+  { key:'silvergrass', emoji:'🌾', name:'물억새', cat:'plant', zone:'하류', zoneBadge:'badge-blue',
+    short:'한강 습지의 대표 식물. 가을 은빛 이삭이 장관이에요.',
+    desc:'물억새는 한강 하류 습지와 강변에 군락을 이루는 대표 식물이에요. 가을이면 은빛 이삭이 바람에 물결처럼 출렁이는 아름다운 풍경을 연출해요. 새들의 은신처와 산란장이 되어주는 중요한 생태적 역할을 해요.',
+    facts:['분류: 벼목 화본과','크기: 높이 1~2m','개화: 9~10월 (은빛 이삭)','역할: 새·곤충 서식지, 수질 정화','서식지: 강변, 습지, 하천 변두리'] },
+  { key:'lotus', emoji:'🪷', name:'수련', cat:'plant', zone:'중류', zoneBadge:'badge-blue',
+    short:'물 위에 둥둥 떠서 피는 꽃. 수질 정화 능력이 뛰어나요.',
+    desc:'수련은 잎이 물 위에 뜨고 꽃도 수면 위에서 피는 수생식물이에요. 한강 중류의 호수나 연못에서 볼 수 있어요. 잎의 왁스 성분이 물을 튕겨내는 "연꽃 효과"로 유명해요. 수질 정화 능력도 뛰어나요.',
+    facts:['분류: 수련목 수련과','특징: 잎과 꽃이 수면 위에 뜸','개화: 6~9월 (흰색·분홍색)','역할: 수질 정화, 물고기 산란 장소','특성: 표면의 왁스층이 물 튕겨냄'] },
+  { key:'reed', emoji:'🌿', name:'갈대', cat:'plant', zone:'하류', zoneBadge:'badge-blue',
+    short:'하류 습지의 거대한 군락. 환경 정화의 일등 공신이에요.',
+    desc:'갈대는 한강 하류와 강변 습지를 대규모로 덮는 다년생 식물이에요. 뿌리가 하천 바닥을 안정시키고 오염 물질을 걸러주는 역할을 해요. 다양한 새와 곤충의 서식지가 되어 생태계 유지에 필수적이에요.',
+    facts:['분류: 벼목 화본과','크기: 높이 1~3m','특징: 거대한 군락 형성','역할: 수질 정화, 야생동물 서식지','생태: 뿌리로 오염 물질 흡수'] },
+
+  /* ── 생태위협종 ── */
+  { key:'bass', emoji:'🐡', name:'배스 (블루길)', cat:'invasive', zone:'하류', zoneBadge:'badge-red',
+    short:'⚠️ 북미 원산 외래종. 토종 물고기를 위협하는 생태계 교란종이에요.',
+    desc:'배스(블루길)는 북아메리카에서 1970~80년대 식용 목적으로 국내에 도입된 외래 어종이에요. 엄청난 식욕으로 토종 물고기, 개구리, 새우를 닥치는 대로 먹어 한강 생태계를 심각하게 교란하고 있어요. 환경부 지정 생태계 교란 야생생물이에요.',
+    facts:['원산지: 북아메리카','도입 시기: 1970~1980년대 (식용 목적)','문제: 토종 생물 대규모 포식','법적 지위: 생태계 교란 야생생물','대응: 포획·제거 캠페인 진행 중'] },
+  { key:'nutria', emoji:'🦫', name:'뉴트리아', cat:'invasive', zone:'하류', zoneBadge:'badge-red',
+    short:'⚠️ 남아메리카 원산 외래 포유류. 수변 식물을 대규모로 파괴해요.',
+    desc:'뉴트리아는 남아메리카가 원산지인 반수생 설치류로 모피용으로 도입되었다가 야생에 퍼졌어요. 수생식물을 뿌리째 뽑아먹어 수변 생태계를 크게 파괴하고, 강둑을 굴을 파 약하게 만들기도 해요. 현재 포획·제거 사업이 진행 중이에요.',
+    facts:['원산지: 남아메리카','크기: 몸길이 40~60cm, 무게 5~9kg','문제: 수생식물 대규모 파괴, 강둑 굴착','법적 지위: 생태계 교란 야생생물','특징: 오렌지빛 앞니가 특징'] },
+  { key:'crayfish', emoji:'🦞', name:'미국가재', cat:'invasive', zone:'중류', zoneBadge:'badge-red',
+    short:'⚠️ 미국 원산 외래 갑각류. 토종 수생생물을 밀어내고 있어요.',
+    desc:'미국가재는 북아메리카 원산의 외래 갑각류로 실험용·식용·애완용으로 유입됐어요. 번식력이 강하고 수온·오염 적응력이 뛰어나 토종 가재와 수생 무척추동물을 몰아내고 있어요. 수서 곤충의 알도 먹어 생태계 먹이사슬을 교란해요.',
+    facts:['원산지: 북아메리카','문제: 토종 가재 서식지 점령, 수생곤충 포식','유입 경로: 실험용·애완용 방류','법적 지위: 생태계 교란 야생생물','대응: 수거·제거 사업 실시'] },
+];
+
+// ── 카드 렌더링 ──
+function renderCards(cat) {
+  const grid = document.getElementById('animalGrid');
+  grid.innerHTML = '';
+  animals.forEach(a => {
+    if (cat !== 'all' && a.cat !== cat) return;
+    const card = document.createElement('div');
+    card.className = 'animal-card';
+    card.innerHTML = `
+      <div class="ac-top">
+        <div class="ac-emoji">${a.emoji}</div>
+        <div class="ac-header">
+          <h3>${a.name}</h3>
+          <div class="badges">
+            <span class="badge ${a.zoneBadge}">${a.zone}</span>
+            <span class="badge ${a.cat==='invasive'?'badge-red':a.cat==='bird'?'badge-blue':a.cat==='mammal'?'badge-green':a.cat==='plant'?'badge-green':'badge-orange'}">${catLabel(a.cat)}</span>
+          </div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-desc">${a.short}</div>
+        <ul class="ac-facts">
+          ${a.facts.slice(0,3).map(f=>`<li>${f}</li>`).join('')}
+        </ul>
+      </div>`;
+    card.addEventListener('click', () => openDetail(a));
+    grid.appendChild(card);
+  });
+}
+
+function catLabel(cat) {
+  return {bird:'조류',mammal:'포유류',fish:'어류',plant:'식물',invasive:'⚠️위협종'}[cat]||cat;
+}
+
+// ── 필터 ──
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    renderCards(btn.dataset.cat);
+  });
+});
+
+// ── 상세 모달 ──
+function openDetail(a) {
+  document.getElementById('dEmoji').textContent   = a.emoji;
+  document.getElementById('dName').textContent    = a.name;
+  document.getElementById('dBadges').innerHTML    = `
+    <span class="badge ${a.zoneBadge}">${a.zone}</span>
+    <span class="badge ${a.cat==='invasive'?'badge-red':'badge-orange'}">${catLabel(a.cat)}</span>`;
+  document.getElementById('dDesc').textContent    = a.desc;
+  document.getElementById('dFacts').innerHTML     = a.facts.map(f=>`<li>${f}</li>`).join('');
+  document.getElementById('detailModal').classList.add('show');
+}
+function closeDetail() {
+  document.getElementById('detailModal').classList.remove('show');
+}
+document.getElementById('detailModal').addEventListener('click', e => {
+  if (e.target===document.getElementById('detailModal')) closeDetail();
+});
+
+// ── 햄버거 ──
+document.getElementById('navToggle').addEventListener('click', () => {
+  document.getElementById('navLinks').classList.toggle('open');
+});
+
+renderCards('all');
+</script>
+</body>
+</html>
