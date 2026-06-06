@@ -114,8 +114,8 @@
     <h2>퀴즈 시작하기</h2>
     <p>한강에 사는 동식물에 대한 퀴즈예요.<br>도감을 먼저 읽으면 더 잘 맞출 수 있어요! 😄</p>
     <div class="difficulty-btns">
-      <button class="diff-btn selected" data-diff="easy">🌱 쉬움 (5문제)</button>
-      <button class="diff-btn" data-diff="normal">🌿 보통 (10문제)</button>
+      <button class="diff-btn selected" data-diff="easy">🌱 쉬움 (4문제)</button>
+      <button class="diff-btn" data-diff="normal">🌿 보통 (8문제)</button>
       <button class="diff-btn" data-diff="hard">🏔️ 어려움 (전체)</button>
     </div>
     <p class="start-hint">⏱️ 문제당 제한 시간 없음 (쉬움·보통) / 20초 (어려움)</p>
@@ -216,8 +216,8 @@ function shuffle(arr) { return [...arr].sort(()=>Math.random()-0.5); }
 
 function startQuiz() {
   const shuffled = shuffle(ALL_QUESTIONS);
-  if (difficulty==='easy')   questions = shuffled.slice(0,5);
-  else if (difficulty==='normal') questions = shuffled.slice(0,10);
+  if (difficulty==='easy')   questions = shuffled.slice(0,4);
+  else if (difficulty==='normal') questions = shuffled.slice(0,8);
   else questions = shuffled;
   currentQ=0; score=0; answered=false;
   document.getElementById('startScreen').style.display='none';
