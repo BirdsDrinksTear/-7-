@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>동식물 도감 - 한강 생태 탐험대</title>
+<title>동물 도감 - 한강 생태 탐험대</title> 
+  <!-- 식물 삭제 - 동식물을 동물로 타이틀 변경하였습니다 -->
 <link rel="stylesheet" href="style.css">
 <style>
 .page-hero { background: linear-gradient(135deg,#1a3c5e 0%,#2e86c1 60%,#27ae60 100%); padding: calc(var(--nav-h)+52px) 24px 52px; text-align:center; }
@@ -95,7 +96,7 @@
   <button class="nav-toggle" id="navToggle"><span></span><span></span><span></span></button>
   <ul class="nav-links" id="navLinks">
     <li><a href="index.html">홈</a></li>
-    <li><a href="animals.html" class="active">동식물 도감</a></li>
+    <li><a href="animals.html" class="active">동물 도감</a></li>
     <li><a href="quiz.html">퀴즈</a></li>
     <li><a href="volunteer.html">봉사활동</a></li>
     <li><a href="form.html">신청하기</a></li>
@@ -104,8 +105,9 @@
 </nav>
 
 <div class="page-hero">
-  <h1>🦦 동식물 도감</h1>
-  <p>한강에 살고 있는 다양한 생물들을 만나보세요.<br>카드를 클릭하면 더 자세한 정보를 볼 수 있어요!</p>
+  <h1>🦦 동물 도감</h1> 
+  <!-- 마찬가지로 동식물을 동물로 -->
+  <p>한강에 살고 있는 다양한 동물들을 만나보세요.<br>카드를 클릭하면 더 자세한 정보를 볼 수 있어요!</p>
 </div>
 
 <div class="filter-bar">
@@ -113,7 +115,6 @@
   <button class="filter-btn" data-cat="bird">🐦 조류</button>
   <button class="filter-btn" data-cat="mammal">🦦 포유류</button>
   <button class="filter-btn" data-cat="fish">🐟 어류</button>
-  <button class="filter-btn" data-cat="plant">🌿 식물</button>
   <button class="filter-btn" data-cat="invasive">⚠️ 생태위협종</button>
 </div>
 
@@ -222,8 +223,8 @@ facts:['분류: 수리목 수리과','크기: 날개 폭 약 1.9~2.3m','먹이: 
 
 /* ── 포유류 ── */
 { key:'otter', emoji:'🦦', name:'수달', cat:'mammal', zone:'상류', zoneBadge:'badge-green',
-short:'한강 생태계의 건강을 알려주는 대표 동물이에요.',
-desc:'수달은 깨끗한 물에서만 살아갈 수 있는 포유류예요. 물갈퀴가 있는 발과 촘촘한 털을 이용해 물속에서 빠르게 헤엄치며 물고기를 잡아요. 한강에서 수달이 발견된다는 것은 생태계가 건강하다는 의미예요.',
+short:'한강 최상위 포식자. 한강 생태계의 건강을 알려주는 대표 동물이에요.',
+desc:'수달은 깨끗한 물에서만 살아갈 수 있는 포유류예요. 물갈퀴가 있는 발과 촘촘한 털을 이용해 물속에서 빠르게 헤엄치며 물고기를 잡아요. 야행성 동물이에요. 한강에서 수달이 발견된다는 것은 생태계가 건강하다는 의미예요.',
 facts:['분류: 식육목 족제빗과','크기: 몸길이 약 65~75cm','먹이: 물고기, 개구리, 가재','보호: 멸종위기 야생동물 1급','특징: 뛰어난 수영 능력'] },
 
 /* ── 어류 ── */
@@ -234,8 +235,8 @@ facts:['분류: 거북목 자라과','크기: 등딱지 길이 약 15~35cm','먹
 
 /* ── 생태위협종 ── */
 { key:'crayfish', emoji:'🦞', name:'미국가재', cat:'invasive', zone:'중류', zoneBadge:'badge-red',
-short:'⚠️ 외래종으로 토종 생물을 밀어내는 생태위협종이에요.',
-desc:'미국가재는 북아메리카 원산의 외래 갑각류예요. 번식력이 강하고 환경 적응력이 뛰어나 토종 가재와 수생생물의 서식지를 차지하며 생태계를 교란하고 있어요.',
+short:'⚠️ 북아메리카 원산 외래 갑각류. 외래종으로 토종 생물을 밀어내는 생태위협종이에요.',
+desc:'미국가재는 북아메리카 원산의 외래 갑각류예요. 번식력이 강하고 환경 적응력이 뛰어나 토종 가재와 수생 무척추동물의 서식지를 차지하며 생태계를 교란하고 있어요.',
 facts:['원산지: 북아메리카','문제: 토종 가재 서식지 점령','특징: 강한 번식력','법적 지위: 생태계 교란 야생생물','대응: 제거 사업 진행 중'] },
 
 { key:'bass', emoji:'🐡', name:'배스', cat:'invasive', zone:'하류', zoneBadge:'badge-red',
