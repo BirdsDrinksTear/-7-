@@ -107,14 +107,14 @@
 <div class="page-hero">
   <h1>🦦 동물 도감</h1> 
   <!-- 마찬가지로 동식물을 동물로 -->
-  <p>한강에 살고 있는 다양한 동물들을 만나보세요.<br>카드를 클릭하면 더 자세한 정보를 볼 수 있어요!</p>
+  <p>한강 대표 동물 6종을 만나보세요.<br>카드를 클릭하면 더 자세한 정보를 볼 수 있어요!</p>
 </div>
 
 <div class="filter-bar">
   <button class="filter-btn active" data-cat="all">전체 보기</button>
   <button class="filter-btn" data-cat="bird">🐦 조류</button>
   <button class="filter-btn" data-cat="mammal">🦦 포유류</button>
-  <button class="filter-btn" data-cat="fish">🐟 어류</button>
+  <button class="filter-btn" data-cat="fish">🐟 물속 생물</button>
   <button class="filter-btn" data-cat="invasive">⚠️ 생태위협종</button>
 </div>
 
@@ -230,7 +230,7 @@ facts:['분류: 식육목 족제빗과','크기: 몸길이 약 65~75cm','먹이:
 /* ── 어류 ── */
 { key:'turtle', emoji:'🐢', name:'자라', cat:'fish', zone:'중류', zoneBadge:'badge-blue',
 short:'길쭉한 코와 부드러운 등딱지가 특징인 보호종이에요.',
-desc:'자라는 거북과 비슷하지만 딱딱한 등껍질 대신 부드러운 가죽 형태의 등딱지를 가지고 있어요. 강이나 호수의 모래밭 주변에서 생활하며 수질 오염과 서식지 감소로 보호가 필요한 종이에요.',
+desc:'자라는 거북과 비슷하지만 딱딱한 등껍질 대신 부드러운 가죽 형태의 등딱지를 가지고 있어요. 강이나 호수의 모래밭 주변에서 생활하며 모래밭에 일광욕하는 모습을 볼 수 있어요. 수질 오염과 서식지 감소로 보호가 필요한 종이에요.',
 facts:['분류: 거북목 자라과','크기: 등딱지 길이 약 15~35cm','먹이: 물고기, 개구리, 수생곤충','특징: 긴 코와 부드러운 등딱지','서식지: 강과 호수 주변'] },
 
 /* ── 생태위협종 ── */
@@ -240,13 +240,13 @@ desc:'미국가재는 북아메리카 원산의 외래 갑각류예요. 번식�
 facts:['원산지: 북아메리카','문제: 토종 가재 서식지 점령','특징: 강한 번식력','법적 지위: 생태계 교란 야생생물','대응: 제거 사업 진행 중'] },
 
 { key:'bass', emoji:'🐡', name:'배스', cat:'invasive', zone:'하류', zoneBadge:'badge-red',
-short:'⚠️ 토종 물고기를 위협하는 대표적인 외래 어종이에요.',
+short:'⚠️ 북미 원산 외래종. 토종 물고기를 위협하는 대표적인 외래 어종이에요.',
 desc:'배스는 북미 원산의 육식성 물고기로 강한 포식성을 가지고 있어요. 한강의 토종 물고기와 양서류를 잡아먹어 생태계 균형을 무너뜨리는 대표적인 생태계 교란종이에요.',
 facts:['원산지: 북아메리카','먹이: 물고기, 양서류, 수생생물','특징: 강한 포식성','문제: 토종 어류 감소','법적 지위: 생태계 교란 야생생물'] },
 
 { key:'nutria', emoji:'🦫', name:'뉴트리아', cat:'invasive', zone:'하류', zoneBadge:'badge-red',
-short:'⚠️ 수변 식물과 강둑을 훼손하는 외래 포유류예요.',
-desc:'뉴트리아는 남아메리카 원산의 반수생 설치류예요. 수생식물을 대량으로 먹고 강둑에 굴을 파 하천 환경을 훼손해 생태계에 큰 피해를 주고 있어요.',
+short:'⚠️ 생태위협종. 수변 식물과 강둑을 훼손하는 외래 포유류예요.',
+desc:'뉴트리아는 남아메리카 원산의 설치류예요. 수변 식물을 대량으로 먹고 강둑에 굴을 파 하천 환경을 훼손해 생태계에 큰 피해를 주고 있어요.',
 facts:['원산지: 남아메리카','크기: 몸길이 약 40~60cm','문제: 수생식물 파괴, 강둑 훼손','특징: 오렌지색 앞니','법적 지위: 생태계 교란 야생생물'] },
 ];
 
@@ -265,7 +265,7 @@ function renderCards(cat) {
           <h3>${a.name}</h3>
           <div class="badges">
             <span class="badge ${a.zoneBadge}">${a.zone}</span>
-            <span class="badge ${a.cat==='invasive'?'badge-red':a.cat==='bird'?'badge-blue':a.cat==='mammal'?'badge-green':a.cat==='plant'?'badge-green':'badge-orange'}">${catLabel(a.cat)}</span>
+            <span class="badge ${a.cat==='invasive'?'badge-red':a.cat==='bird'?'badge-blue':a.cat==='mammal'?'badge-green':'badge-orange'}">${catLabel(a.cat)}</span>
           </div>
         </div>
       </div>
@@ -281,7 +281,7 @@ function renderCards(cat) {
 }
 
 function catLabel(cat) {
-  return {bird:'조류',mammal:'포유류',fish:'어류',plant:'식물',invasive:'⚠️위협종'}[cat]||cat;
+  return {bird:'조류',mammal:'포유류',fish:'물속 생물',invasive:'⚠️위협종'}[cat]||cat;
 }
 
 // ── 필터 ──
