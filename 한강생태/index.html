@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>한강 생태 탐험대</title>
+<link rel="stylesheet" href="./css/style.css">
+<style>
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  background: linear-gradient(160deg, #0d3b5e 0%, #1a6ea8 45%, #2ecc71 100%);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+  position: relative; overflow: hidden;
+  padding: calc(var(--nav-h) + 40px) 24px 60px;
+}
+.hero-bg-wave {
+  position: absolute; bottom: 0; left: 0; right: 0; width: 100%;
+  height: 140px; pointer-events: none; display: block;
+}
+.hero-title {
+  font-family: 'Jua', sans-serif;
+  font-size: clamp(2.4rem, 7vw, 5.5rem);
+  color: #fff;
+  text-shadow: 0 4px 30px rgba(0,0,0,0.35);
+  animation: fadeUp 0.9s ease both;
+}
+.hero-sub {
+  font-size: clamp(1rem, 2.5vw, 1.3rem);
+  color: rgba(255,255,255,0.88);
+  margin: 18px 0 36px;
+  animation: fadeUp 0.9s 0.15s ease both;
+}
+.hero-btns {
+  display: flex; gap: 14px; flex-wrap: wrap; justify-content: center;
+  animation: fadeUp 0.9s 0.3s ease both;
+}
+.hero-scroll-hint {
+  position: absolute; bottom: 160px; left: 50%; transform: translateX(-50%);
+  color: rgba(255,255,255,0.6); font-size: 0.85rem;
+  animation: bounce 2s ease-in-out infinite;
+}
+@keyframes fadeUp {
+  from { opacity:0; transform: translateY(28px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+@keyframes bounce {
+  0%,100% { transform: translateX(-50%) translateY(0); }
+  50%      { transform: translateX(-50%) translateY(8px); }
+}
+
+/* floating fish */
+.fish-float {
+  position: absolute; font-size: 1.8rem; pointer-events: none;
+  animation: fishSwim linear infinite;
+  opacity: 0.6;
+}
+@keyframes fishSwim {
+  0%   { left: -60px; }
+  100% { left: calc(100% + 60px); }
+}
+
+/* ── NAV CARDS (페이지 링크) ── */
+.nav-cards-section {
+  background: #fff;
+  padding: 60px 24px;
+}
+.nav-cards-section h2 {
+  font-family: 'Jua', sans-serif;
+  font-size: 1.8rem; text-align: center;
+  margin-bottom: 36px; color: var(--dark);
+}
+.nav-cards {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px; max-width: 1100px; margin: 0 auto;
+}
+.nav-card {
+  display: flex; flex-direction: column;
+  align-items: center; text-align: center;
+  background: var(--surface);
+  border-radius: 20px; padding: 32px 20px;
+  text-decoration: none; color: var(--dark);
+  border: 2px solid transparent;
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+.nav-card:hover {
+  border-color: var(--river);
+  transform: translateY(-6px);
+  box-shadow: 0 12px 32px rgba(45,134,193,0.15);
+}
+.nav-card .nc-icon { font-size: 2.8rem; margin-bottom: 14px; }
+.nav-card .nc-title { font-family: 'Jua', sans-serif; font-size: 1.05rem; margin-bottom: 6px; }
+.nav-card .nc-desc  { font-size: 0.82rem; color: #777; line-height: 1.5; }
+
+/* ── MAP SECTION ── */
+.map-section {
+  padding: 70px 0 80px;
+  background: linear-gradient(180deg, #e8f5e9 0%, #e3f2fd 100%);
+}
+.map-section-header {
+  text-align: center; padding: 0 24px 36px;
+}
+.map-section-header h2 {
+  font-family: 'Jua', sans-serif;
+  font-size: clamp(1.5rem, 3.5vw, 2.2rem);
+  color: var(--dark); margin-bottom: 8px;
+}
+.map-section-header p { color: #555; font-size: 0.95rem; }
+
+/* ── DESKTOP: horizontal scroll map ── */
+.map-outer {
+  overflow-x: auto; overflow-y: visible;
+  padding: 0 24px 20px;
+  cursor: grab;
+  -webkit-overflow-scrolling: touch;
+}
+.map-outer:active { cursor: grabbing; }
+.map-outer::-webkit-scrollbar { height: 6px; }
+.map-outer::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 3px; }
+.map-outer::-webkit-scrollbar-thumb { background: var(--river); border-radius: 3px; }
+
+.map-canvas {
+  position: relative;
+  width: 100%; min-width: 1200px; height: auto;
+}
+
+/* ── MOBILE: vertical river map ── */
+.map-canvas-mobile { display: none; }
+
+@media (max-width: 768px) {
+  .map-outer { display: none; }
+  .map-canvas-mobile {
+    display: block;
+    position: relative;
+    width: min(100% - 28px, 430px);
+    height: 720px;
+    margin: 0 auto;
+    overflow: hidden;
+    border-radius: 28px;
+    background: linear-gradient(180deg, #dff3df 0%, #e4f5ff 52%, #d8ecff 100%);
+    box-shadow: 0 10px 30px rgba(33,150,243,0.16);
+  }
+  .mobile-river-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .mobile-zone-label {
+    position: absolute;
+    left: 18px;
+    z-index: 2;
+    padding: 8px 14px;
+    border-radius: 999px;
+    color: #fff;
+    font-family: 'Jua', sans-serif;
+    font-size: 0.95rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  }
+  .mobile-zone-label.up { top: 18px; background: linear-gradient(135deg,#388e3c,#66bb6a); }
+  .mobile-zone-label.mid { top: 248px; background: linear-gradient(135deg,#1565c0,#42a5f5); }
+  .mobile-zone-label.down { top: 478px; background: linear-gradient(135deg,#0d47a1,#1e88e5); }
+  .mobile-map-spot {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    z-index: 3;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    font-family: 'Jua', sans-serif;
+  }
+  .mobile-map-spot .spot-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: rgba(255,255,255,0.9);
+    border: 2.4px solid var(--spot-color, #1565c0);
+    font-size: 1.55rem;
+    box-shadow: 0 5px 14px rgba(0,0,0,0.13);
+  }
+  .mobile-map-spot .spot-name {
+    color: var(--spot-color, #0d47a1);
+    font-size: 0.78rem;
+    white-space: nowrap;
+    text-shadow:
+      -1px -1px 0 rgba(255,255,255,0.95),
+       1px -1px 0 rgba(255,255,255,0.95),
+      -1px  1px 0 rgba(255,255,255,0.95),
+       1px  1px 0 rgba(255,255,255,0.95),
+       0 2px 6px rgba(255,255,255,0.9);
+  }
+  .mobile-map-spot.danger .spot-name::after { content: ' ⚠️'; }
+}
+
+/* ── ZONE LEGEND ── */
+.zone-legend {
+  display: flex; justify-content: center; gap: 28px; flex-wrap: wrap;
+  padding: 16px 24px 0;
+  font-size: 0.9rem;
+}
+.zone-legend-item { display: flex; align-items: center; gap: 8px; }
+.zone-dot { width: 16px; height: 16px; border-radius: 50%; }
+
+/* ── ANIMAL POPUP ── */
+.animal-modal {
+  display: none;
+  position: fixed; inset: 0; z-index: 800;
+  background: rgba(0,0,0,0.55);
+  align-items: center; justify-content: center;
+  padding: 20px;
+}
+.animal-modal.show { display: flex; }
+.modal-card {
+  background: #fff; border-radius: 24px;
+  padding: 40px 36px; max-width: 440px; width: 100%;
+  text-align: center;
+  animation: popIn 0.28s ease;
+  position: relative;
+}
+@keyframes popIn {
+  from { transform: scale(0.75); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+.modal-close {
+  position: absolute; top: 16px; right: 18px;
+  background: none; border: none; font-size: 1.5rem;
+  cursor: pointer; color: #aaa; line-height: 1;
+}
+.modal-emoji { font-size: 4.5rem; margin-bottom: 10px; }
+.modal-name  { font-family: 'Jua', sans-serif; font-size: 1.7rem; margin-bottom: 6px; }
+.modal-zone-badge { margin-bottom: 14px; }
+.modal-desc  { font-size: 0.95rem; color: #555; line-height: 1.75; margin-bottom: 24px; }
+.modal-btns  { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="site-nav">
+  <a class="nav-brand" href="index.html">🌊 <span>한강</span> 생태 탐험대</a>
+  <button class="nav-toggle" id="navToggle" aria-label="메뉴">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html" class="active">홈</a></li>
+    <li><a href="animals.html">동식물 도감</a></li>
+    <li><a href="game.html">퀴즈</a></li>
+    <li><a href="volunteer.html">봉사활동</a></li>
+    <li><a href="form.html">신청하기</a></li>
+    <li><a href="team.html">팀 소개</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <span class="fish-float" style="top:65%;animation-duration:9s;animation-delay:0s;">🐟</span>
+  <span class="fish-float" style="top:72%;animation-duration:13s;animation-delay:4s;font-size:1.3rem;">🐠</span>
+  <span class="fish-float" style="top:58%;animation-duration:11s;animation-delay:7s;">🐡</span>
+
+  <h1 class="hero-title">한강 생태 탐험대</h1>
+  <p class="hero-sub">서울을 가로지르는 한강, 그 속에 살아 숨쉬는 생명들을 만나보세요</p>
+  <div class="hero-btns">
+    <a href="#map" class="btn btn-primary">🗺️ 생태지도 보기</a>
+  </div>
+
+  <div class="hero-scroll-hint">▼ 스크롤해서 탐험하기</div>
+
+  <svg class="hero-bg-wave" viewBox="0 0 1440 140" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
+    <path d="M0,80 C180,20 360,140 540,80 C720,20 900,120 1080,70 C1260,20 1380,110 1440,80 L1440,140 L0,140 Z" fill="#e8f5e9"/>
+  </svg>
+</section>
+
+<!-- 페이지 링크 카드 -->
+<section class="nav-cards-section">
+  <h2>무엇을 탐험할까요?</h2>
+  <div class="nav-cards">
+    <a href="animals.html" class="nav-card">
+      <div class="nc-icon">🦦</div>
+      <div class="nc-title">동식물 도감</div>
+      <div class="nc-desc">조류·포유류·식물·생태위협종을 한눈에</div>
+    </a>
+    <a href="game.html" class="nav-card">
+      <div class="nc-icon">🧠</div>
+      <div class="nc-title">생태 퀴즈</div>
+      <div class="nc-desc">도감을 공부하고 퀴즈로 실력을 확인해요</div>
+    </a>
+    <a href="volunteer.html" class="nav-card">
+      <div class="nc-icon">🌱</div>
+      <div class="nc-title">봉사활동</div>
+      <div class="nc-desc">한강 생태계 보호 봉사활동 정보 모음</div>
+    </a>
+    <a href="form.html" class="nav-card">
+      <div class="nc-icon">📋</div>
+      <div class="nc-title">봉사 신청</div>
+      <div class="nc-desc">원하는 봉사활동에 지금 바로 신청해요</div>
+    </a>
+    <a href="team.html" class="nav-card">
+      <div class="nc-icon">👥</div>
+      <div class="nc-title">팀 소개</div>
+      <div class="nc-desc">이 사이트를 만든 탐험대원들을 소개해요</div>
+    </a>
+  </div>
+</section>
+
+<!-- MAP SECTION -->
+<section class="map-section" id="map">
+  <div class="map-section-header">
+    <h2>🗺️ 한강 생태 지도</h2>
+    <p>각 구역의 생물 이름을 클릭하면 자세한 정보를 볼 수 있어요</p>
+  </div>
+
+  <!-- DESKTOP MAP (가로 스크롤) -->
+  <div class="map-outer" id="mapOuter">
+    <div class="map-canvas">
+      <svg width="100%" height="100%" viewBox="0 0 1500 500" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="display:block;">
+        <!-- Sky & ground -->
+        <rect width="1500" height="500" fill="#e8f5e9"/>
+        <!-- Ground strips -->
+        <rect x="0" y="0" width="1500" height="120" fill="#c8e6c9" rx="0"/>
+        <rect x="0" y="360" width="1500" height="140" fill="#c8e6c9"/>
+
+        <!-- Zone background shades -->
+        <rect x="0"    y="0" width="500"  height="500" fill="rgba(76,175,80,0.06)"/>
+        <rect x="500"  y="0" width="500"  height="500" fill="rgba(33,150,243,0.06)"/>
+        <rect x="1000" y="0" width="500"  height="500" fill="rgba(3,169,244,0.09)"/>
+
+        <!-- Zone dividers -->
+        <line x1="500" y1="0" x2="500" y2="500" stroke="rgba(0,0,0,0.12)" stroke-width="1.5" stroke-dasharray="8,6"/>
+        <line x1="1000" y1="0" x2="1000" y2="500" stroke="rgba(0,0,0,0.12)" stroke-width="1.5" stroke-dasharray="8,6"/>
+
+        <!-- RIVER PATH (굴곡진 한강) -->
+        <!-- Main water body -->
+        <path d="
+          M 0,175
+          C 60,155 120,200 180,185
+          C 240,170 300,210 370,195
+          C 420,183 460,165 500,172
+          C 550,180 580,215 640,205
+          C 700,195 740,170 800,178
+          C 860,186 890,215 950,205
+          C 1010,195 1050,168 1110,175
+          C 1170,182 1220,210 1280,198
+          C 1340,186 1400,165 1500,172
+          L 1500,305
+          C 1400,318 1340,298 1280,310
+          C 1220,322 1170,342 1110,332
+          C 1050,322 1010,295 950,305
+          C 890,315 860,342 800,332
+          C 740,322 700,295 640,305
+          C 580,315 550,342 500,332
+          C 460,322 420,298 370,310
+          C 300,325 240,342 180,328
+          C 120,314 60,295 0,308
+          Z
+        " fill="url(#riverGrad)" opacity="0.92"/>
+
+        <!-- River shimmer lines -->
+        <path d="M 50,230 C 150,222 250,238 350,228 C 450,218 550,234 650,225 C 750,216 850,232 950,222 C 1050,212 1150,228 1300,220" stroke="rgba(255,255,255,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M 80,260 C 200,252 320,268 440,258 C 560,248 680,264 800,255 C 920,246 1040,262 1180,252 C 1320,242 1420,258 1480,250" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+
+        <!-- Island (여의도 느낌) -->
+        <ellipse cx="760" cy="255" rx="55" ry="24" fill="#a5d6a7" opacity="0.8"/>
+        <text x="760" y="259" text-anchor="middle" font-size="10" fill="#2e7d32" font-family="Noto Sans KR">여의도</text>
+
+        <!-- Gradient def -->
+        <defs>
+          <linearGradient id="riverGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="#64b5f6"/>
+            <stop offset="50%"  stop-color="#2196f3"/>
+            <stop offset="100%" stop-color="#1565c0"/>
+          </linearGradient>
+          <linearGradient id="upGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%"  stop-color="#388e3c"/>
+            <stop offset="100%" stop-color="#66bb6a"/>
+          </linearGradient>
+          <linearGradient id="midGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%"  stop-color="#1565c0"/>
+            <stop offset="100%" stop-color="#42a5f5"/>
+          </linearGradient>
+          <linearGradient id="downGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%"  stop-color="#0d47a1"/>
+            <stop offset="100%" stop-color="#1e88e5"/>
+          </linearGradient>
+        </defs>
+
+        <!-- ── ZONE LABELS ── -->
+        <rect x="20"   y="14" width="110" height="36" rx="18" fill="url(#upGrad)"/>
+        <text x="75"   y="37" text-anchor="middle" font-size="15" fill="#fff" font-family="Jua, sans-serif">🏔️ 상류</text>
+
+        <rect x="530"  y="14" width="110" height="36" rx="18" fill="url(#midGrad)"/>
+        <text x="585"  y="37" text-anchor="middle" font-size="15" fill="#fff" font-family="Jua, sans-serif">🌿 중류</text>
+
+        <rect x="1030" y="14" width="110" height="36" rx="18" fill="url(#downGrad)"/>
+        <text x="1085" y="37" text-anchor="middle" font-size="15" fill="#fff" font-family="Jua, sans-serif">🌊 하류</text>
+
+        <!-- Trees / scenery -->
+        <text x="60"  y="115" font-size="28">🌲</text>
+        <text x="130" y="110" font-size="32">🌳</text>
+        <text x="220" y="118" font-size="24">🌲</text>
+        <text x="310" y="112" font-size="28">🌳</text>
+        <text x="390" y="116" font-size="24">🌿</text>
+        <text x="60"  y="390" font-size="26">🪨</text>
+        <text x="140" y="400" font-size="22">🪨</text>
+        <text x="240" y="385" font-size="28">🌾</text>
+
+        <text x="560" y="112" font-size="28">🌿</text>
+        <text x="640" y="108" font-size="30">🌳</text>
+        <text x="730" y="114" font-size="24">🌿</text>
+        <text x="850" y="110" font-size="28">🌳</text>
+        <text x="920" y="115" font-size="24">🌿</text>
+        <text x="560" y="395" font-size="26">🌾</text>
+        <text x="660" y="388" font-size="28">🌾</text>
+        <text x="800" y="395" font-size="26">🌾</text>
+
+        <text x="1060" y="110" font-size="26">🌴</text>
+        <text x="1160" y="108" font-size="30">🌴</text>
+        <text x="1260" y="114" font-size="24">🌿</text>
+        <text x="1380" y="110" font-size="28">🌴</text>
+        <text x="1060" y="395" font-size="28">🌊</text>
+        <text x="1200" y="390" font-size="26">🌊</text>
+        <text x="1380" y="398" font-size="24">🌊</text>
+
+        <!-- ── 상류 핵심 생물 스팟 (2마리: 멸종위기 1급 우선) ── -->
+        <!-- 흰꼬리수리 -->
+        <g class="bio-spot" data-key="eagle" style="cursor:pointer;">
+          <circle cx="170" cy="155" r="24" fill="#fff" stroke="#388e3c" stroke-width="2.8" opacity="0.94"/>
+          <text x="170" y="164" text-anchor="middle" font-size="24">🦅</text>
+        </g>
+        <text x="170" y="195" text-anchor="middle" font-size="13" fill="#1b5e20" font-family="Jua,sans-serif" font-weight="bold">흰꼬리수리</text>
+
+        <!-- 수달 -->
+        <g class="bio-spot" data-key="otter" style="cursor:pointer;">
+          <circle cx="350" cy="300" r="24" fill="#fff" stroke="#388e3c" stroke-width="2.8" opacity="0.94"/>
+          <text x="350" y="309" text-anchor="middle" font-size="24">🦦</text>
+        </g>
+        <text x="350" y="340" text-anchor="middle" font-size="13" fill="#1b5e20" font-family="Jua,sans-serif" font-weight="bold">수달</text>
+
+        <!-- ── 중류 핵심 생물 스팟 (2마리: 위협종 우선) ── -->
+        <!-- 미국가재 -->
+        <g class="bio-spot" data-key="crayfish" style="cursor:pointer;">
+          <circle cx="650" cy="225" r="24" fill="#fff" stroke="#c62828" stroke-width="2.8" opacity="0.94"/>
+          <text x="650" y="234" text-anchor="middle" font-size="24">🦞</text>
+        </g>
+        <text x="650" y="265" text-anchor="middle" font-size="13" fill="#b71c1c" font-family="Jua,sans-serif" font-weight="bold">미국가재⚠️</text>
+
+        <!-- 자라 -->
+        <g class="bio-spot" data-key="turtle" style="cursor:pointer;">
+          <circle cx="880" cy="310" r="24" fill="#fff" stroke="#1565c0" stroke-width="2.8" opacity="0.94"/>
+          <text x="880" y="319" text-anchor="middle" font-size="24">🐢</text>
+        </g>
+        <text x="880" y="350" text-anchor="middle" font-size="13" fill="#0d47a1" font-family="Jua,sans-serif" font-weight="bold">자라</text>
+
+        <!-- ── 하류 핵심 생물 스팟 (2마리: 위협종 우선) ── -->
+        <!-- 배스(외래종) -->
+        <g class="bio-spot" data-key="bass" style="cursor:pointer;">
+          <circle cx="1180" cy="235" r="24" fill="#fff" stroke="#c62828" stroke-width="2.8" opacity="0.94"/>
+          <text x="1180" y="244" text-anchor="middle" font-size="24">🐡</text>
+        </g>
+        <text x="1180" y="275" text-anchor="middle" font-size="13" fill="#b71c1c" font-family="Jua,sans-serif" font-weight="bold">배스⚠️</text>
+
+        <!-- 뉴트리아 -->
+        <g class="bio-spot" data-key="nutria" style="cursor:pointer;">
+          <circle cx="1360" cy="325" r="24" fill="#fff" stroke="#c62828" stroke-width="2.8" opacity="0.94"/>
+          <text x="1360" y="334" text-anchor="middle" font-size="24">🦫</text>
+        </g>
+        <text x="1360" y="365" text-anchor="middle" font-size="13" fill="#b71c1c" font-family="Jua,sans-serif" font-weight="bold">뉴트리아⚠️</text>
+
+      </svg>
+    </div>
+  </div>
+
+  <!-- MOBILE MAP (세로 강 지도) -->
+  <div class="map-canvas-mobile" aria-label="모바일 한강 생태 지도">
+    <svg class="mobile-river-svg" viewBox="0 0 390 720" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="mobileRiverGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#64b5f6"/>
+          <stop offset="48%" stop-color="#2196f3"/>
+          <stop offset="100%" stop-color="#0d47a1"/>
+        </linearGradient>
+      </defs>
+      <rect width="390" height="720" fill="#e8f5e9"/>
+      <rect x="0" y="0" width="390" height="220" fill="rgba(76,175,80,0.08)"/>
+      <rect x="0" y="220" width="390" height="250" fill="rgba(33,150,243,0.07)"/>
+      <rect x="0" y="470" width="390" height="250" fill="rgba(3,169,244,0.10)"/>
+      <path d="
+        M 155,-20
+        C 120,45 132,95 168,150
+        C 208,210 240,245 198,315
+        C 165,370 135,420 178,485
+        C 222,550 260,610 218,740
+        L 330,740
+        C 368,620 338,545 294,480
+        C 252,418 280,362 313,305
+        C 354,236 315,170 272,120
+        C 230,72 235,25 255,-20
+        Z" fill="url(#mobileRiverGrad)" opacity="0.94"/>
+      <path d="M 212,20 C 185,82 202,130 232,178 C 270,238 262,285 225,345 C 186,408 210,460 245,515 C 284,575 295,630 270,700" stroke="rgba(255,255,255,0.42)" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <path d="M 175,70 C 150,125 178,180 210,225 M 285,345 C 245,392 245,448 282,500 M 205,560 C 235,605 245,648 230,694" stroke="rgba(255,255,255,0.24)" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <text x="35" y="130" font-size="26">🌲</text>
+      <text x="330" y="95" font-size="28">🌳</text>
+      <text x="45" y="385" font-size="24">🌾</text>
+      <text x="330" y="405" font-size="24">🌿</text>
+      <text x="42" y="630" font-size="27">🌊</text>
+      <text x="320" y="650" font-size="27">🌊</text>
+    </svg>
+
+    <div class="mobile-zone-label up">🏔️ 상류</div>
+    <div class="mobile-zone-label mid">🌿 중류</div>
+    <div class="mobile-zone-label down">🌊 하류</div>
+
+    <button class="mobile-map-spot" data-key="eagle" style="--x:63%;--y:18%;--spot-color:#388e3c;">
+      <span class="spot-icon">🦅</span><span class="spot-name">흰꼬리수리</span>
+    </button>
+    <button class="mobile-map-spot" data-key="otter" style="--x:38%;--y:28%;--spot-color:#388e3c;">
+      <span class="spot-icon">🦦</span><span class="spot-name">수달</span>
+    </button>
+    <button class="mobile-map-spot danger" data-key="crayfish" style="--x:65%;--y:48%;--spot-color:#c62828;">
+      <span class="spot-icon">🦞</span><span class="spot-name">미국가재</span>
+    </button>
+    <button class="mobile-map-spot" data-key="turtle" style="--x:40%;--y:59%;--spot-color:#1565c0;">
+      <span class="spot-icon">🐢</span><span class="spot-name">자라</span>
+    </button>
+    <button class="mobile-map-spot danger" data-key="bass" style="--x:64%;--y:76%;--spot-color:#c62828;">
+      <span class="spot-icon">🐡</span><span class="spot-name">배스</span>
+    </button>
+    <button class="mobile-map-spot danger" data-key="nutria" style="--x:42%;--y:87%;--spot-color:#c62828;">
+      <span class="spot-icon">🦫</span><span class="spot-name">뉴트리아</span>
+    </button>
+  </div>
+
+  <!-- Zone legend -->
+  <div class="zone-legend">
+    <div class="zone-legend-item"><div class="zone-dot" style="background:#388e3c;"></div> 상류 생물</div>
+    <div class="zone-legend-item"><div class="zone-dot" style="background:#1565c0;"></div> 중류 생물</div>
+    <div class="zone-legend-item"><div class="zone-dot" style="background:#0d47a1;"></div> 하류 생물</div>
+    <div class="zone-legend-item"><div class="zone-dot" style="background:#c62828;"></div> ⚠️ 생태위협종</div>
+  </div>
+</section>
+
+<!-- ANIMAL MODAL -->
+<div class="animal-modal" id="animalModal">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-emoji" id="mEmoji"></div>
+    <div class="modal-name"  id="mName"></div>
+    <div class="modal-zone-badge" id="mBadge"></div>
+    <div class="modal-desc"  id="mDesc"></div>
+    <div class="modal-btns">
+      <a href="animals.html" class="btn btn-primary" id="mAnimalLink">📖 도감에서 보기</a>
+      <a href="game.html"    class="btn btn-accent">🧠 퀴즈 풀기</a>
+      <button class="btn btn-ghost" onclick="closeModal()">닫기</button>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <p>🌊 한강 생태 탐험대 | 교육 목적 프로젝트</p>
+  <p>한강사업본부 <a href="https://hangang.seoul.go.kr" target="_blank">hangang.seoul.go.kr</a></p>
+</footer>
+
+<script>
+// ── 생물 데이터 ──
+const bioData = {
+  eagle:     { emoji:'🦅', name:'흰꼬리수리', zone:'상류', zoneBadge:'badge-green', desc:'날개 폭 2m 이상의 대형 맹금류. 겨울 철새로 한강 상류권에서 관찰되며, 환경부 지정 멸종위기 야생동물 1급이에요.' },
+  otter:     { emoji:'🦦', name:'수달',       zone:'상류', zoneBadge:'badge-green', desc:'한강 최상위 포식자. 깨끗한 물에서만 살아 생태 건강 지표가 되는 멸종위기 야생동물 1급이에요. 주로 물고기를 사냥하며 야행성이에요.' },
+  crayfish:  { emoji:'🦞', name:'미국가재',   zone:'중류', zoneBadge:'badge-red',   desc:'⚠️ 북아메리카 원산 외래 갑각류. 번식력과 적응력이 강해 토종 가재와 수생 무척추동물을 밀어내는 생태위협종이에요.' },
+  turtle:    { emoji:'🐢', name:'자라',       zone:'중류', zoneBadge:'badge-blue',  desc:'모래밭에 일광욕하는 모습을 볼 수 있어요. 거북이와 달리 코가 길쭉하고 등딱지가 부드러우며, 보호가 필요한 멸종위기종이에요.' },
+  bass:      { emoji:'🐡', name:'배스(블루길)', zone:'하류', zoneBadge:'badge-red',  desc:'⚠️ 북미 원산 외래종. 강한 포식성으로 토종 물고기와 수생생물을 위협하는 생태계 교란 야생생물이에요.' },
+  nutria:    { emoji:'🦫', name:'뉴트리아',   zone:'하류', zoneBadge:'badge-red',   desc:'⚠️ 남아메리카 원산 외래 포유류. 수변 식물을 대규모로 먹고 강둑에 굴을 파 하천 생태계를 훼손하는 생태위협종이에요.' },
+};
+
+// 모바일/데스크톱 지도 클릭 이벤트
+document.querySelectorAll('.bio-spot, .mobile-map-spot').forEach(el => {
+  el.addEventListener('click', () => openModal(el.dataset.key));
+});
+
+function openModal(key) {
+  const d = bioData[key];
+  if (!d) return;
+  document.getElementById('mEmoji').textContent = d.emoji;
+  document.getElementById('mName').textContent  = d.name;
+  document.getElementById('mBadge').innerHTML   = `<span class="badge ${d.zoneBadge}">${d.zone}</span>`;
+  document.getElementById('mDesc').textContent  = d.desc;
+  document.getElementById('animalModal').classList.add('show');
+}
+function closeModal() {
+  document.getElementById('animalModal').classList.remove('show');
+}
+document.getElementById('animalModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('animalModal')) closeModal();
+});
+
+// 드래그 스크롤 (데스크탑)
+const outer = document.getElementById('mapOuter');
+let drag = false, startX, sl;
+outer.addEventListener('mousedown', e => { drag=true; startX=e.pageX-outer.offsetLeft; sl=outer.scrollLeft; });
+outer.addEventListener('mouseleave', ()=>drag=false);
+outer.addEventListener('mouseup',   ()=>drag=false);
+outer.addEventListener('mousemove', e => {
+  if (!drag) return;
+  e.preventDefault();
+  outer.scrollLeft = sl - (e.pageX - outer.offsetLeft - startX);
+});
+
+// 햄버거 메뉴
+document.getElementById('navToggle').addEventListener('click', () => {
+  document.getElementById('navLinks').classList.toggle('open');
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>팀 소개 - 한강 생태 탐험대</title>
+<link rel="stylesheet" href="./css/style.css">
+<style>
+.page-hero { background:linear-gradient(135deg,#2c3e50 0%,#2e86c1 55%,#27ae60 100%); padding:calc(var(--nav-h)+52px) 24px 52px; text-align:center; }
+.page-hero h1 { font-family:'Jua',sans-serif; font-size:clamp(1.8rem,4vw,2.8rem); color:#fff; margin-bottom:10px; }
+.page-hero p  { color:rgba(255,255,255,0.85); font-size:1rem; max-width:520px; margin:0 auto; }
+
+/* team intro banner */
+.team-banner {
+  max-width:880px; margin:48px auto 0; padding:0 24px;
+  background:#fff; border-radius:22px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.07);
+  padding:32px 36px;
+  display:flex; gap:24px; align-items:center; flex-wrap:wrap;
+}
+.team-banner .tb-icon { font-size:3.5rem; flex-shrink:0; }
+.team-banner h2 { font-family:'Jua',sans-serif; font-size:1.4rem; margin-bottom:8px; }
+.team-banner p  { font-size:0.9rem; color:#555; line-height:1.75; }
+@media(max-width:600px) { .team-banner { padding:24px 20px; } }
+
+/* member grid */
+.member-grid {
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:24px; max-width:1100px; margin:40px auto 80px; padding:0 24px;
+}
+
+.member-card { background:#fff; border-radius:22px; overflow:hidden; box-shadow:0 4px 18px rgba(0,0,0,0.07); transition:transform 0.2s, box-shadow 0.2s; }
+.member-card:hover { transform:translateY(-6px); box-shadow:0 12px 34px rgba(0,0,0,0.12); }
+
+.mc-top { padding:30px 24px 22px; text-align:center; }
+.mc-avatar {
+  width:88px; height:88px; border-radius:50%;
+  margin:0 auto 16px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:3rem;
+  border:4px solid rgba(255,255,255,0.6);
+}
+.mc-name   { font-family:'Jua',sans-serif; font-size:1.3rem; color:#fff; margin-bottom:3px; }
+.mc-id     { font-size:0.82rem; color:rgba(255,255,255,0.8); margin-bottom:2px; }
+.mc-major  { font-size:0.82rem; color:rgba(255,255,255,0.8); }
+
+.mc-body { padding:18px 22px 24px; }
+.mc-role { display:inline-block; background:linear-gradient(135deg,var(--accent),#f7c05c); color:#fff; padding:5px 14px; border-radius:20px; font-family:'Jua',sans-serif; font-size:0.85rem; margin-bottom:14px; }
+.mc-tasks { list-style:none; }
+.mc-tasks li { font-size:0.85rem; color:#444; padding:6px 0; border-bottom:1px solid #f0f4f8; display:flex; gap:8px; line-height:1.5; }
+.mc-tasks li:last-child { border-bottom:none; }
+.mc-tasks li::before { content:'▸'; color:var(--river-dark); flex-shrink:0; }
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <a class="nav-brand" href="index.html">🌊 <span>한강</span> 생태 탐험대</a>
+  <button class="nav-toggle" id="navToggle"><span></span><span></span><span></span></button>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html">홈</a></li>
+    <li><a href="animals.html">동식물 도감</a></li>
+    <li><a href="game.html">퀴즈</a></li>
+    <li><a href="volunteer.html">봉사활동</a></li>
+    <li><a href="form.html">신청하기</a></li>
+    <li><a href="team.html" class="active">팀 소개</a></li>
+  </ul>
+</nav>
+
+<div class="page-hero">
+  <h1>👥 팀 소개</h1>
+  <p>한강 생태 탐험대를 만든 팀원들을 소개해요</p>
+</div>
+
+<div style="max-width:880px;margin:48px auto 0;padding:0 24px;">
+  <div class="team-banner" style="margin:0;">
+    <div class="tb-icon">🌊</div>
+    <div>
+      <h2>Team HanRiver Explorer</h2>
+      <p>저희 팀은 어린이와 청소년들이 한강의 생태를 쉽고 재미있게 배울 수 있는 웹사이트를 제작했습니다.<br>
+      생태 교육, 인터랙티브 지도, 퀴즈 게임, 봉사활동 안내를 하나의 사이트에 담아내는 것을 목표로 했습니다.</p>
+    </div>
+  </div>
+</div>
+
+<div class="member-grid">
+
+  <div class="member-card">
+    <div class="mc-top" style="background:linear-gradient(135deg,#b71c1c,#ef5350);">
+      <div class="mc-avatar" style="background: rgba(255, 255, 255, 0.2); border-radius: 50%; overflow: hidden;">
+        <img src="./images/team/이승원.jpg" alt="이승원" style="width: 100%; height: 100%; object-fit: cover;">
+      </div>
+      <div class="mc-name">이승원</div>
+      <div class="mc-id">학번 : 20233080</div>
+      <div class="mc-major">소프트웨어학부</div>
+    </div>
+    <div class="mc-body">
+      <span class="mc-role">📝메인 페이지 구성</span>
+      <ul class="mc-tasks">
+        <li>팀 소개 페이지 구현</li>
+        <li>페이지 간 구조 통합</li>
+        <li>웹사이트 화면 구성</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="member-card">
+    <div class="mc-top" style="background:linear-gradient(135deg,#f39c12,#f7c05c);">
+      <div class="mc-avatar" style="background: rgba(255, 255, 255, 0.2); border-radius: 50%; overflow: hidden;">
+        <img src="./images/team/차준호.jpg" alt="차준호" style="width: 100%; height: 100%; object-fit: cover;">
+      </div>
+      <div class="mc-name">차준호</div>
+      <div class="mc-id">학번: 20233108</div>
+      <div class="mc-major">소프트웨어학부</div>
+    </div>
+    <div class="mc-body">
+      <span class="mc-role">🎮도감 및 게임 페이지 구성</span>
+      <ul class="mc-tasks">
+        <li>생태 퀴즈 페이지 제작</li>
+        <li>점수 계산 기능 구현</li>
+        <li>퀴즈 진행 기능 구현</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="member-card">
+    <div class="mc-top" style="background:linear-gradient(135deg,#2e7d32,#66bb6a);">
+
+      <div class="mc-avatar" style="background: rgba(255, 255, 255, 0.2); border-radius: 50%; overflow: hidden;">
+        <img src="./images/team/송지민.jpg" alt="송지민" style="width: 100%; height: 100%; object-fit: cover;">
+      </div>
+
+      <div class="mc-name">송지민</div>
+      <div class="mc-id">학번 : 20245265</div>
+      <div class="mc-major">소프트웨어학부</div>
+    </div>
+    <div class="mc-body">
+      <span class="mc-role">👨🏻‍🍼봉사활동 목록 및 폼페이지 구성</span>
+      <ul class="mc-tasks">
+        <li>한강 생태위협종 자료 조사</li>
+        <li>봉사활동 정보 빛 활동기록 구성</li>
+        <li>신청 페이지 화면 구성</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="member-card">
+    <div class="mc-top" style="background:linear-gradient(135deg,#7bc0ea, #3a8ecb);">
+      <div class="mc-avatar" style="background: rgba(255, 255, 255, 0.2); border-radius: 50%; overflow: hidden;">
+        <img src="./images/team/홍준영.jpg" alt="홍준영" style="width: 100%; height: 100%; object-fit: cover;">
+      </div>
+
+      <div class="mc-name">홍준영</div>
+      <div class="mc-id">학번 : 20252370</div>
+      <div class="mc-major">소프트웨어학부</div>
+    </div>
+    <div class="mc-body">
+      <span class="mc-role">📝메인 페이지 구성</span>
+      <ul class="mc-tasks">
+        <li>전체 페이지 디자인 정리</li>
+        <li>메인 페이지 제작</li>
+        <li>한강 지도 화면 구현</li>
+      </ul>
+    </div>
+  </div>
+
+
+  <div class="member-card">
+    <div class="mc-top" style="background:linear-gradient(135deg,#1a237e, #283593);">
+      <div class="mc-avatar" style="background: rgba(255, 255, 255, 0.2); border-radius: 50%; overflow: hidden;">
+        <img src="./images/team/부서윤.jpg" alt="부서윤" style="width: 100%; height: 100%; object-fit: cover;">
+      </div>
+      <div class="mc-name">부서윤</div>
+      <div class="mc-id">학번 : 20252774</div>
+      <div class="mc-major">소프트웨어학부</div>
+    </div>
+    <div class="mc-body">
+      <span class="mc-role">📖도감 및 게임 페이지 구성</span>
+      <ul class="mc-tasks">
+        <li>동식물 도감 페이지 구성</li>
+        <li>생물 정보 분류 및 콘텐츠 구성</li>
+        <li>도감 화면 구성</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<footer class="site-footer">
+  <p>🌊 한강 생태 탐험대 | 교육 목적 프로젝트</p>
+  <p style="margin-top:6px;">이 웹사이트는 한강 생태 교육을 위해 제작된 학생 프로젝트입니다.</p>
+</footer>
+
+<script>
+document.getElementById('navToggle').addEventListener('click', () => {
+  document.getElementById('navLinks').classList.toggle('open');
+});
+</script>
+</body>
+</html>
