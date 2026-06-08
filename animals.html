@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>동식물 도감 - 한강 생태 탐험대</title>
+<title>동물 도감 - 한강 생태 탐험대</title> 
+  <!-- 식물 삭제 - 동식물을 동물로 타이틀 변경하였습니다 -->
 <link rel="stylesheet" href="style.css">
 <style>
 .page-hero { background: linear-gradient(135deg,#1a3c5e 0%,#2e86c1 60%,#27ae60 100%); padding: calc(var(--nav-h)+52px) 24px 52px; text-align:center; }
@@ -95,8 +96,8 @@
   <button class="nav-toggle" id="navToggle"><span></span><span></span><span></span></button>
   <ul class="nav-links" id="navLinks">
     <li><a href="index.html">홈</a></li>
-    <li><a href="animals.html" class="active">동식물 도감</a></li>
-    <li><a href="quiz.html">퀴즈</a></li>
+    <li><a href="animals.html" class="active">동물 도감</a></li>
+    <li><a href="game.html">퀴즈</a></li>
     <li><a href="volunteer.html">봉사활동</a></li>
     <li><a href="form.html">신청하기</a></li>
     <li><a href="team.html">팀 소개</a></li>
@@ -104,16 +105,16 @@
 </nav>
 
 <div class="page-hero">
-  <h1>🦦 동식물 도감</h1>
-  <p>한강에 살고 있는 다양한 생물들을 만나보세요.<br>카드를 클릭하면 더 자세한 정보를 볼 수 있어요!</p>
+  <h1>🦦 동물 도감</h1> 
+  <!-- 마찬가지로 동식물을 동물로 -->
+  <p>한강 대표 동물 6종을 만나보세요.<br>카드를 클릭하면 더 자세한 정보를 볼 수 있어요!</p>
 </div>
 
 <div class="filter-bar">
   <button class="filter-btn active" data-cat="all">전체 보기</button>
   <button class="filter-btn" data-cat="bird">🐦 조류</button>
   <button class="filter-btn" data-cat="mammal">🦦 포유류</button>
-  <button class="filter-btn" data-cat="fish">🐟 어류</button>
-  <button class="filter-btn" data-cat="plant">🌿 식물</button>
+  <button class="filter-btn" data-cat="fish">🐟 물속 생물</button>
   <button class="filter-btn" data-cat="invasive">⚠️ 생태위협종</button>
 </div>
 
@@ -131,7 +132,7 @@
       <h4>📋 주요 정보</h4>
       <ul id="dFacts"></ul>
     </div>
-    <div class="d-quiz-hint">💡 이 내용은 퀴즈에 나올 수 있어요! <a href="quiz.html" style="color:var(--accent);font-weight:700;">퀴즈 풀러 가기 →</a></div>
+    <div class="d-quiz-hint">💡 이 내용은 퀴즈에 나올 수 있어요! <a href="game.html" style="color:var(--accent);font-weight:700;">퀴즈 풀러 가기 →</a></div>
   </div>
 </div>
 
@@ -140,7 +141,7 @@
 </footer>
 
 <script>
-const animals = [
+const animals_old = [
   /* ── 조류 ── */
   { key:'heron', emoji:'🦢', name:'왜가리', cat:'bird', zone:'중류', zoneBadge:'badge-blue',
     short:'한강 최고의 사냥꾼. 물가에 꼼짝않고 서 있다가 순간 낚아채요.',
@@ -212,6 +213,43 @@ const animals = [
     facts:['원산지: 북아메리카','문제: 토종 가재 서식지 점령, 수생곤충 포식','유입 경로: 실험용·애완용 방류','법적 지위: 생태계 교란 야생생물','대응: 수거·제거 사업 실시'] },
 ];
 
+// 새로 수정한 내용 : 동물 종류를 바꿈
+const animals = [
+/* ── 조류 ── */
+{ key:'eagle', emoji:'🦅', name:'흰꼬리수리', cat:'bird', zone:'상류', zoneBadge:'badge-green',
+short:'날개 폭 2m 이상의 대형 맹금류. 한강 상류를 대표하는 멸종위기종이에요.',
+desc:'흰꼬리수리는 한강에서 관찰되는 가장 큰 맹금류 중 하나예요. 겨울철 시베리아에서 날아오는 철새이며 강과 습지 주변에서 물고기와 조류를 사냥해요. 환경부 지정 멸종위기 야생동물 1급으로 보호받고 있어요.',
+facts:['분류: 수리목 수리과','크기: 날개 폭 약 1.9~2.3m','먹이: 물고기, 조류, 소형 동물','보호: 멸종위기 야생동물 1급','특징: 한강 상류 대표 맹금류'] },
+
+/* ── 포유류 ── */
+{ key:'otter', emoji:'🦦', name:'수달', cat:'mammal', zone:'상류', zoneBadge:'badge-green',
+short:'한강 최상위 포식자. 한강 생태계의 건강을 알려주는 대표 동물이에요.',
+desc:'수달은 깨끗한 물에서만 살아갈 수 있는 포유류예요. 물갈퀴가 있는 발과 촘촘한 털을 이용해 물속에서 빠르게 헤엄치며 물고기를 잡아요. 야행성 동물이에요. 한강에서 수달이 발견된다는 것은 생태계가 건강하다는 의미예요.',
+facts:['분류: 식육목 족제빗과','크기: 몸길이 약 65~75cm','먹이: 물고기, 개구리, 가재','보호: 멸종위기 야생동물 1급','특징: 뛰어난 수영 능력'] },
+
+/* ── 어류 ── */
+{ key:'turtle', emoji:'🐢', name:'자라', cat:'fish', zone:'중류', zoneBadge:'badge-blue',
+short:'길쭉한 코와 부드러운 등딱지가 특징인 보호종이에요.',
+desc:'자라는 거북과 비슷하지만 딱딱한 등껍질 대신 부드러운 가죽 형태의 등딱지를 가지고 있어요. 강이나 호수의 모래밭 주변에서 생활하며 모래밭에 일광욕하는 모습을 볼 수 있어요. 수질 오염과 서식지 감소로 보호가 필요한 종이에요.',
+facts:['분류: 거북목 자라과','크기: 등딱지 길이 약 15~35cm','먹이: 물고기, 개구리, 수생곤충','특징: 긴 코와 부드러운 등딱지','서식지: 강과 호수 주변'] },
+
+/* ── 생태위협종 ── */
+{ key:'crayfish', emoji:'🦞', name:'미국가재', cat:'invasive', zone:'중류', zoneBadge:'badge-red',
+short:'⚠️ 북아메리카 원산 외래 갑각류. 외래종으로 토종 생물을 밀어내는 생태위협종이에요.',
+desc:'미국가재는 북아메리카 원산의 외래 갑각류예요. 번식력이 강하고 환경 적응력이 뛰어나 토종 가재와 수생 무척추동물의 서식지를 차지하며 생태계를 교란하고 있어요.',
+facts:['원산지: 북아메리카','문제: 토종 가재 서식지 점령','특징: 강한 번식력','법적 지위: 생태계 교란 야생생물','대응: 제거 사업 진행 중'] },
+
+{ key:'bass', emoji:'🐡', name:'배스', cat:'invasive', zone:'하류', zoneBadge:'badge-red',
+short:'⚠️ 북미 원산 외래종. 토종 물고기를 위협하는 대표적인 외래 어종이에요.',
+desc:'배스는 북미 원산의 육식성 물고기로 강한 포식성을 가지고 있어요. 한강의 토종 물고기와 양서류를 잡아먹어 생태계 균형을 무너뜨리는 대표적인 생태계 교란종이에요.',
+facts:['원산지: 북아메리카','먹이: 물고기, 양서류, 수생생물','특징: 강한 포식성','문제: 토종 어류 감소','법적 지위: 생태계 교란 야생생물'] },
+
+{ key:'nutria', emoji:'🦫', name:'뉴트리아', cat:'invasive', zone:'하류', zoneBadge:'badge-red',
+short:'⚠️ 생태위협종. 수변 식물과 강둑을 훼손하는 외래 포유류예요.',
+desc:'뉴트리아는 남아메리카 원산의 설치류예요. 수변 식물을 대량으로 먹고 강둑에 굴을 파 하천 환경을 훼손해 생태계에 큰 피해를 주고 있어요.',
+facts:['원산지: 남아메리카','크기: 몸길이 약 40~60cm','문제: 수생식물 파괴, 강둑 훼손','특징: 오렌지색 앞니','법적 지위: 생태계 교란 야생생물'] },
+];
+
 // ── 카드 렌더링 ──
 function renderCards(cat) {
   const grid = document.getElementById('animalGrid');
@@ -227,7 +265,7 @@ function renderCards(cat) {
           <h3>${a.name}</h3>
           <div class="badges">
             <span class="badge ${a.zoneBadge}">${a.zone}</span>
-            <span class="badge ${a.cat==='invasive'?'badge-red':a.cat==='bird'?'badge-blue':a.cat==='mammal'?'badge-green':a.cat==='plant'?'badge-green':'badge-orange'}">${catLabel(a.cat)}</span>
+            <span class="badge ${a.cat==='invasive'?'badge-red':a.cat==='bird'?'badge-blue':a.cat==='mammal'?'badge-green':'badge-orange'}">${catLabel(a.cat)}</span>
           </div>
         </div>
       </div>
@@ -243,7 +281,7 @@ function renderCards(cat) {
 }
 
 function catLabel(cat) {
-  return {bird:'조류',mammal:'포유류',fish:'어류',plant:'식물',invasive:'⚠️위협종'}[cat]||cat;
+  return {bird:'조류',mammal:'포유류',fish:'물속 생물',invasive:'⚠️위협종'}[cat]||cat;
 }
 
 // ── 필터 ──

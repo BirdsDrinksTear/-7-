@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>생태 퀴즈 - 한강 생태 탐험대</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.page-hero { background:linear-gradient(135deg,#1a1a4e 0%,#2e86c1 60%,#f39c12 100%); padding:calc(var(--nav-h)+52px) 24px 52px; text-align:center; }
+.page-hero h1 { font-family:'Jua',sans-serif; font-size:clamp(1.8rem,4vw,2.8rem); color:#fff; margin-bottom:10px; }
+.page-hero p  { color:rgba(255,255,255,0.85); font-size:1rem; }
+
+/* start screen */
+#startScreen { max-width:520px; margin:48px auto 80px; padding:0 24px; text-align:center; }
+.start-card { background:#fff; border-radius:24px; padding:40px 32px; box-shadow:0 6px 24px rgba(0,0,0,0.1); }
+.start-card h2 { font-family:'Jua',sans-serif; font-size:1.6rem; margin-bottom:12px; }
+.start-card p  { color:#555; font-size:0.95rem; line-height:1.7; margin-bottom:28px; }
+.difficulty-btns { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-bottom:20px; }
+.diff-btn {
+  padding:12px 28px; border-radius:20px; border:2px solid #d0dde8;
+  background:#fff; font-family:'Jua',sans-serif; font-size:1rem;
+  cursor:pointer; transition:all 0.18s;
+}
+.diff-btn.selected { border-color:var(--river-dark); background:var(--river-dark); color:#fff; }
+.start-hint { font-size:0.82rem; color:#888; margin-bottom:24px; }
+
+/* quiz screen */
+#quizScreen { display:none; max-width:620px; margin:40px auto 80px; padding:0 24px; }
+
+.progress-wrap { margin-bottom:20px; }
+.progress-top  { display:flex; justify-content:space-between; font-size:0.85rem; color:#888; margin-bottom:6px; }
+.progress-bar  { height:8px; background:#e0eef7; border-radius:99px; }
+.progress-fill { height:8px; background:linear-gradient(to right,var(--river-dark),var(--river)); border-radius:99px; transition:width 0.4s; }
+
+.score-live { background:#fff; border-radius:16px; padding:10px 20px; display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; box-shadow:0 2px 10px rgba(0,0,0,0.06); font-size:0.9rem; }
+.score-live .sl-num { font-family:'Jua',sans-serif; font-size:1.1rem; color:var(--river-dark); }
+
+.q-card { background:#fff; border-radius:20px; padding:32px; box-shadow:0 4px 18px rgba(0,0,0,0.08); margin-bottom:18px; }
+.q-category { font-size:0.8rem; color:var(--river-dark); font-weight:700; margin-bottom:10px; letter-spacing:0.03em; }
+.q-text { font-size:1.1rem; font-weight:700; color:var(--dark); line-height:1.65; margin-bottom:24px; }
+.q-emoji { font-size:2.8rem; margin-bottom:12px; display:block; }
+
+.choices { display:flex; flex-direction:column; gap:11px; }
+.choice {
+  padding:14px 18px; border-radius:12px; border:2px solid #dce8f0;
+  background:#f8fbfd; font-size:0.97rem; text-align:left;
+  cursor:pointer; transition:all 0.15s;
+}
+.choice:hover:not(:disabled) { border-color:var(--river); background:#e8f4fb; }
+.choice.correct { border-color:#27ae60; background:#d5f5e3; color:#1a5c2a; font-weight:700; }
+.choice.wrong   { border-color:var(--danger); background:#fadbd8; color:#922b21; }
+.choice:disabled { cursor:default; }
+
+.feedback-box {
+  display:none; border-radius:14px; padding:16px 20px;
+  font-size:0.9rem; line-height:1.65; margin-bottom:14px;
+}
+.feedback-box.show { display:block; }
+.feedback-box.correct { background:#d5f5e3; color:#1a5c2a; border:1px solid #82e0aa; }
+.feedback-box.wrong   { background:#fadbd8; color:#922b21; border:1px solid #f1948a; }
+
+.next-btn { display:none; width:100%; }
+.next-btn.show { display:block; }
+
+/* result screen */
+#resultScreen { display:none; max-width:520px; margin:40px auto 80px; padding:0 24px; text-align:center; }
+.result-card { background:#fff; border-radius:24px; padding:48px 32px; box-shadow:0 8px 30px rgba(0,0,0,0.1); }
+.r-trophy { font-size:5rem; margin-bottom:10px; }
+.r-score  { font-family:'Jua',sans-serif; font-size:3rem; color:var(--river-dark); margin:12px 0; }
+.r-grade  { font-family:'Jua',sans-serif; font-size:1.4rem; margin-bottom:10px; }
+.r-msg    { color:#555; font-size:0.95rem; line-height:1.7; margin-bottom:28px; }
+.r-breakdown { background:#f6fafd; border-radius:14px; padding:16px 20px; margin-bottom:24px; text-align:left; }
+.r-breakdown h4 { font-family:'Jua',sans-serif; font-size:0.95rem; color:var(--river-dark); margin-bottom:12px; }
+.r-row { display:flex; justify-content:space-between; font-size:0.88rem; padding:5px 0; border-bottom:1px solid #e8f0f7; color:#444; }
+.r-row:last-child { border-bottom:none; }
+.r-btns { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+
+/* timer */
+.timer-wrap { display:flex; align-items:center; gap:8px; }
+.timer-circle {
+  width:36px; height:36px; border-radius:50%;
+  border:3px solid #d0dde8;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Jua',sans-serif; font-size:0.9rem; color:var(--dark);
+  transition:border-color 0.3s, color 0.3s;
+}
+.timer-circle.warning { border-color:var(--accent); color:var(--accent); }
+.timer-circle.danger  { border-color:var(--danger);  color:var(--danger); }
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <a class="nav-brand" href="index.html">🌊 <span>한강</span> 생태 탐험대</a>
+  <button class="nav-toggle" id="navToggle"><span></span><span></span><span></span></button>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html">홈</a></li>
+    <li><a href="animals.html">동식물 도감</a></li>
+    <li><a href="game.html" class="active">퀴즈</a></li>
+    <li><a href="volunteer.html">봉사활동</a></li>
+    <li><a href="form.html">신청하기</a></li>
+    <li><a href="team.html">팀 소개</a></li>
+  </ul>
+</nav>
+
+<div class="page-hero">
+  <h1>🧠 생태 퀴즈</h1>
+  <p>동식물 도감을 공부하고 퀴즈로 실력을 확인해보세요!</p>
+</div>
+
+<!-- Start -->
+<div id="startScreen">
+  <div class="start-card">
+    <h2>퀴즈 시작하기</h2>
+    <p>한강에 사는 동식물에 대한 퀴즈예요.<br>도감을 먼저 읽으면 더 잘 맞출 수 있어요! 😄</p>
+    <div class="difficulty-btns">
+      <button class="diff-btn selected" data-diff="easy">🌱 쉬움 (4문제)</button>
+      <button class="diff-btn" data-diff="normal">🌿 보통 (8문제)</button>
+      <button class="diff-btn" data-diff="hard">🏔️ 어려움 (전체)</button>
+    </div>
+    <p class="start-hint">⏱️ 문제당 제한 시간 없음 (쉬움·보통) / 20초 (어려움)</p>
+    <button class="btn btn-primary" style="width:100%;padding:14px;" onclick="startQuiz()">퀴즈 시작 →</button>
+    <div style="margin-top:16px;">
+      <a href="animals.html" style="font-size:0.88rem;color:var(--river-dark);">📖 도감 먼저 공부하기</a>
+    </div>
+  </div>
+</div>
+
+<!-- Quiz -->
+<div id="quizScreen">
+  <div class="progress-wrap">
+    <div class="progress-top">
+      <span id="qProgress">1 / 10</span>
+      <div class="timer-wrap">
+        <span id="timerLabel" style="font-size:0.82rem;color:#888;"></span>
+        <div class="timer-circle" id="timerCircle" style="display:none;"></div>
+      </div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  </div>
+  <div class="score-live">
+    <span>현재 점수</span>
+    <span class="sl-num" id="scoreLive">0점</span>
+  </div>
+  <div class="q-card">
+    <div class="q-category" id="qCategory"></div>
+    <span class="q-emoji" id="qEmoji"></span>
+    <div class="q-text" id="qText"></div>
+    <div class="choices" id="choices"></div>
+    <div class="feedback-box" id="feedbackBox"></div>
+    <button class="btn btn-primary next-btn" id="nextBtn" onclick="nextQ()">다음 문제 →</button>
+  </div>
+</div>
+
+<!-- Result -->
+<div id="resultScreen">
+  <div class="result-card">
+    <div class="r-trophy" id="rTrophy"></div>
+    <div id="rStars"></div>
+    <div class="r-score"  id="rScore"></div>
+    <div class="r-grade"  id="rGrade"></div>
+    <div class="r-msg"    id="rMsg"></div>
+    <div class="r-breakdown">
+      <h4>📊 결과 분석</h4>
+      <div class="r-row"><span>정답 수</span><span id="rCorrect"></span></div>
+      <div class="r-row"><span>오답 수</span><span id="rWrong"></span></div>
+      <div class="r-row"><span>정답률</span><span id="rRate"></span></div>
+      <div class="r-row"><span>난이도</span><span id="rDiff"></span></div>
+    </div>
+    <div class="r-btns">
+      <button class="btn btn-primary" onclick="retryQuiz()">🔄 다시 도전</button>
+      <a href="animals.html" class="btn btn-ghost">📖 도감 복습</a>
+      <a href="volunteer.html" class="btn btn-accent">🌱 봉사활동 보기</a>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <p>🌊 한강 생태 탐험대 | 교육 목적 프로젝트</p>
+</footer>
+
+<script src="game.js"></script>
+</body>
+</html>
